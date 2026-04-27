@@ -1,9 +1,1119 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-  </head>
-  <body>
-    <h2>This is a sample Widget built using Zoho Extension toolkit.</h2>
-  </body>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Check-In</title>
+ <script src="https://js.zohostatic.com/creator/widgets/version/2.0/widgetsdk-min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Zoho Creator palette */
+    --purple:      #6c2bd9;
+    --purple-dark: #4a1a9e;
+    --purple-mid:  #8b47e8;
+    --purple-lt:   rgba(108,43,217,0.09);
+    --purple-md:   rgba(108,43,217,0.18);
+    --purple-glow: rgba(108,43,217,0.35);
+    --violet:      #a78bfa;
+    --white:       #ffffff;
+    --bg:          #f4f2fb;
+    --surface:     #faf9fd;
+    --card:        #ffffff;
+    --ink:         #1e1130;
+    --ink-mid:     #3d2c60;
+    --muted:       #8b84a3;
+    --border:      rgba(108,43,217,0.12);
+    --border-soft: rgba(30,17,48,0.08);
+    --green:       #15803d;
+    --green2:      #22c55e;
+    --shadow-sm:   0 2px 10px rgba(108,43,217,0.08);
+    --shadow-md:   0 8px 32px rgba(108,43,217,0.14);
+    --shadow-lg:   0 28px 80px rgba(108,43,217,0.20);
+    --r:           16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 98vh;
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 5px;
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 65% 50% at 10% 30%, rgba(108,43,217,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 55% 60% at 90% 70%, rgba(167,139,250,0.06) 0%, transparent 60%);
+  }
+
+  .shell {
+    width: 100%;
+    max-width: 1060px;
+    display: grid;
+    grid-template-columns: 52% 48%;
+    background: var(--card);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* ══════════════════════ LEFT PANEL ══════════════════════ */
+  .left {
+    padding: 44px 40px 40px;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(160deg, #1e1130 0%, #2d1a50 60%, #3d2272 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Decorative blobs */
+  .left::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 350px; height: 350px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(108,43,217,0.30) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .left::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  /* Brand */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    margin-bottom: 32px;
+    position: relative; z-index: 1;
+  }
+
+  .brand-mark {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: var(--purple);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 18px rgba(108,43,217,0.55);
+    flex-shrink: 0;
+  }
+
+  .brand-mark svg { width: 19px; height: 19px; color: #fff; }
+
+  .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .brand-name span { color: rgba(255,255,255,0.4); font-weight: 400; }
+
+  /* Left heading */
+  .left-head {
+    position: relative; z-index: 1;
+    margin-bottom: 24px;
+  }
+
+  .left-eyebrow {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--violet);
+    margin-bottom: 8px;
+  }
+
+  .left-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.22;
+    margin-bottom: 10px;
+  }
+
+  .left-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.40);
+    line-height: 1.7;
+  }
+
+  /* ── Upload Zone ── */
+  .upload-zone {
+    position: relative; z-index: 1;
+    border: 2px dashed rgba(167,139,250,0.30);
+    border-radius: var(--r);
+    flex: 1;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.32s ease;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .upload-zone:hover {
+    border-color: var(--violet);
+    background: rgba(108,43,217,0.10);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(108,43,217,0.20);
+  }
+
+  .upload-zone.drag-over {
+    border-color: var(--violet);
+    background: rgba(108,43,217,0.15);
+    transform: scale(1.01);
+  }
+
+  .upload-zone.has-image {
+    border-style: solid;
+    border-color: var(--purple-mid);
+    padding: 0;
+    min-height: 340px;
+  }
+
+  .upload-zone.has-image .upload-idle { display: none; }
+
+  .upload-idle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 36px 28px;
+    text-align: center;
+  }
+
+  .up-icon {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(108,43,217,0.22);
+    border: 1.5px solid rgba(167,139,250,0.35);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.32s ease, background 0.32s ease;
+  }
+
+  .upload-zone:hover .up-icon {
+    transform: translateY(-5px) scale(1.07);
+    background: rgba(108,43,217,0.32);
+  }
+
+  .up-icon svg { width: 32px; height: 32px; color: var(--violet); }
+
+  .upload-idle h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.92);
+  }
+
+  .upload-idle p {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.5;
+    max-width: 200px;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-pill {
+    padding: 9px 20px;
+    border-radius: 50px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid rgba(167,139,250,0.30);
+    background: rgba(108,43,217,0.18);
+    color: var(--violet);
+    display: flex; align-items: center; gap: 7px;
+    transition: all 0.22s;
+    backdrop-filter: blur(4px);
+  }
+
+  .btn-pill:hover {
+    border-color: var(--violet);
+    background: rgba(108,43,217,0.30);
+    transform: translateY(-1px);
+  }
+
+  /* Preview */
+  #preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    min-height: 340px;
+    border-radius: 14px;
+  }
+
+  .img-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 16px 18px;
+    background: linear-gradient(transparent, rgba(10,4,24,0.80));
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 0 0 14px 14px;
+  }
+
+  .upload-zone.has-image .img-bar { display: flex; }
+
+  .img-bar-left { display: flex; align-items: center; gap: 8px; }
+
+  .img-bar-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--violet);
+    animation: blink 1.6s ease-in-out infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .img-bar-name {
+    font-size: 12px;
+    color: rgba(255,255,255,0.82);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+  }
+
+  .btn-chg {
+    font-size: 11px;
+    padding: 5px 14px;
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.28);
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .btn-chg:hover { background: rgba(255,255,255,0.22); }
+
+  /* Loading overlay on zone */
+  .zone-loading {
+    position: absolute;
+    inset: 0;
+    background: rgba(30,17,48,0.72);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    z-index: 10;
+    border-radius: 14px;
+    backdrop-filter: blur(3px);
+  }
+
+  .zone-loading.active { display: flex; }
+
+  .zone-loading-text {
+    font-size: 13px;
+    color: var(--violet);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .ring-spinner {
+    width: 44px; height: 44px;
+    border: 3px solid rgba(167,139,250,0.25);
+    border-top-color: var(--violet);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #file-input, #camera-input { display: none; }
+
+  /* ══════════════════════ RIGHT PANEL ══════════════════════ */
+  .right {
+    padding: 44px 38px 40px;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+  }
+
+  .right-header { margin-bottom: 26px; }
+
+  .right-eyebrow {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 6px;
+  }
+
+  .right-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  /* Empty state */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 15px;
+    padding: 30px 20px;
+  }
+
+  .empty-graphic {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    background: var(--purple-lt);
+    border: 2px dashed var(--border);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+
+  .empty-graphic svg { width: 36px; height: 36px; color: var(--purple); opacity: 0.5; }
+
+  .empty-graphic::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px dashed rgba(108,43,217,0.15);
+  }
+
+  .empty-state h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .empty-state p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    max-width: 210px;
+  }
+
+  /* Employee panel */
+  .emp-panel {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .emp-panel.visible {
+    display: flex;
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Avatar card */
+  .avatar-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 18px 18px;
+    background: linear-gradient(135deg, var(--purple-lt), rgba(167,139,250,0.06));
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+    animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  .av-img {
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2.5px solid var(--purple);
+    display: none;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 4px var(--purple-lt);
+  }
+
+  .av-init {
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple-dark), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    border: 2.5px solid var(--purple-mid);
+    box-shadow: 0 0 0 4px var(--purple-lt), 0 4px 16px rgba(108,43,217,0.25);
+  }
+
+  .av-body { flex: 1; min-width: 0; }
+
+  .av-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .av-forum {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--purple);
+    background: var(--purple-lt);
+    padding: 3px 10px;
+    border-radius: 50px;
+    border: 1px solid var(--purple-md);
+  }
+
+  .av-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--green);
+    background: rgba(21,128,61,0.08);
+    padding: 4px 10px;
+    border-radius: 50px;
+    border: 1px solid rgba(21,128,61,0.18);
+    width: fit-content;
+    margin-left: auto;
+  }
+
+  /* Info rows */
+  .info-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 16px;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px 15px;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.22s ease;
+  }
+
+  .info-row:nth-child(1) { animation: fadeUp 0.42s cubic-bezier(0.16,1,0.3,1) 0.06s both; }
+  .info-row:nth-child(2) { animation: fadeUp 0.42s cubic-bezier(0.16,1,0.3,1) 0.11s both; }
+  .info-row:nth-child(3) { animation: fadeUp 0.42s cubic-bezier(0.16,1,0.3,1) 0.16s both; }
+
+  .info-row:hover {
+    border-color: var(--border);
+    transform: translateX(4px);
+    box-shadow: 0 4px 16px rgba(108,43,217,0.08);
+  }
+
+  .ir-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--purple-dark), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(108,43,217,0.28);
+  }
+
+  .ir-icon svg { width: 15px; height: 15px; color: rgba(255,255,255,0.9); }
+
+  .ir-body { flex: 1; min-width: 0; }
+
+  .ir-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+
+  .ir-value {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Attendance button */
+  .btn-attend {
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: 13px;
+    border: none;
+    background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 50%, var(--purple-mid) 100%);
+    background-size: 200% 100%;
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 9px;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 24px rgba(108,43,217,0.38);
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.22s both;
+    margin-top: auto;
+  }
+
+  .btn-attend::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.14) 0%, transparent 55%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .btn-attend:hover::before { opacity: 1; }
+
+  .btn-attend:hover:not(:disabled) {
+    background-position: right center;
+    transform: translateY(-3px);
+    box-shadow: 0 14px 40px rgba(108,43,217,0.48);
+  }
+
+  .btn-attend:active { transform: translateY(-1px); }
+
+  .btn-attend:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Spinner */
+  .spinner {
+    width: 17px; height: 17px;
+    border: 2px solid rgba(255,255,255,0.28);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(14px);
+    background: var(--ink);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    padding: 11px 22px;
+    border-radius: 50px;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.38s cubic-bezier(0.16,1,0.3,1);
+    display: flex; align-items: center; gap: 8px;
+    z-index: 9999;
+    border: 1px solid rgba(255,255,255,0.07);
+    max-width: 92vw;
+  }
+
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--purple-mid); }
+  .toast.error   { border-color: #f87171; }
+
+  /* ── Tablet / Mobile ── */
+  @media (max-width: 860px) {
+    body { padding: 14px; align-items: flex-start; }
+    .shell { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+    .left  { padding: 36px 26px 30px; }
+    .right { padding: 30px 26px 36px; }
+    .left-title, .right-title { font-size: 24px; }
+    .upload-zone { min-height: 260px; }
+    #preview-img { min-height: 260px; }
+    .left::before, .left::after { opacity: 0.6; }
+    .btn-attend { margin-top: 16px; }
+  }
+
+  @media (max-width: 460px) {
+    .left, .right { padding: 24px 18px; }
+    .left-title, .right-title { font-size: 21px; }
+    .btn-row { flex-direction: column; }
+    .btn-pill { justify-content: center; }
+    .toast { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ══ LEFT PANEL ══ -->
+  <div class="left">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div class="brand-name">EO Chennai <span>Portal</span></div>
+    </div>
+
+    <div class="left-head">
+      <p class="left-eyebrow">Member Check-In</p>
+      <h1 class="left-title">Upload Your Photo</h1>
+      <p class="left-sub">Choose from your gallery or take a new portrait — your details will load instantly.</p>
+    </div>
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="upload-zone" onclick="handleZoneClick()">
+      <div class="upload-idle">
+        <div class="up-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+        <h3>Drop your photo here</h3>
+        <p>JPG, PNG or WebP — up to 10 MB</p>
+        <div class="btn-row">
+          <button class="btn-pill" onclick="triggerFile(event,'gallery')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Gallery
+          </button>
+          <button class="btn-pill" onclick="triggerFile(event,'camera')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Camera
+          </button>
+        </div>
+      </div>
+
+      <img id="preview-img" src="" alt="Preview"/>
+
+      <!-- Loading overlay shown while API call is in progress -->
+      <div class="zone-loading" id="zone-loading">
+        <div class="ring-spinner"></div>
+        <div class="zone-loading-text">Fetching your details…</div>
+      </div>
+
+      <div class="img-bar">
+        <div class="img-bar-left">
+          <div class="img-bar-dot"></div>
+          <span class="img-bar-name" id="fname">photo.jpg</span>
+        </div>
+        <button class="btn-chg" onclick="handleZoneClick()">Change</button>
+      </div>
+    </div>
+
+    <input type="file" id="file-input" accept="image/*">
+    <input type="file" id="camera-input" accept="image/*" capture="user">
+  </div>
+
+  <!-- ══ RIGHT PANEL ══ -->
+  <div class="right">
+    <div class="right-header">
+      <p class="right-eyebrow">Employee Record</p>
+      <h2 class="right-title">Member Details</h2>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" id="empty-state">
+      <div class="empty-graphic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <h4>No Profile Loaded</h4>
+      <p>Select or capture a photo on the left — your information will appear here automatically.</p>
+    </div>
+
+    <!-- Employee panel -->
+    <div class="emp-panel" id="emp-panel">
+      <div class="avatar-card">
+        <img id="av-img" class="av-img" src="" alt=""/>
+        <div class="av-init" id="av-init">?</div>
+        <div class="av-body">
+          <div class="av-name" id="av-name">—</div>
+          <div class="av-forum" id="av-forum">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            —
+          </div>
+        </div>
+        <div class="av-badge">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Verified
+        </div>
+      </div>
+
+      <div class="info-stack">
+        <div class="info-row">
+          <div class="ir-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="ir-body">
+            <div class="ir-label">Email Address</div>
+            <div class="ir-value" id="ir-email">—</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="ir-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.54a16 16 0 0 0 6.29 6.29l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div class="ir-body">
+            <div class="ir-label">Mobile Number</div>
+            <div class="ir-value" id="ir-phone">—</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="ir-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="ir-body">
+            <div class="ir-label">Forum Name</div>
+            <div class="ir-value" id="ir-forum">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Attendance -->
+      <button class="btn-attend" id="attend-btn" onclick="handleAttendance()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+          <line x1="12" y1="14" x2="12" y2="18"/>
+          <line x1="10" y1="16" x2="14" y2="16"/>
+        </svg>
+        Add Attendance
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-msg">Done!</span>
+</div>
+
+<script>
+  const zone       = document.getElementById('upload-zone');
+  const fileInput  = document.getElementById('file-input');
+  const camInput   = document.getElementById('camera-input');
+  const preview    = document.getElementById('preview-img');
+  const emptyState = document.getElementById('empty-state');
+  const empPanel   = document.getElementById('emp-panel');
+  const zoneLoader = document.getElementById('zone-loading');
+
+  let busy = false;
+
+  function handleZoneClick() {
+    if (busy) return;
+    fileInput.click();
+  }
+
+  function triggerFile(e, src) {
+    e.stopPropagation();
+    if (busy) return;
+    src === 'camera' ? camInput.click() : fileInput.click();
+  }
+  let record_id;
+  let mem_id;
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+  async function onFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      showToast('Please select a valid image file.', 'error'); return;
+    }
+
+    busy = true;
+
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      // Show preview immediately
+      preview.src = ev.target.result;
+      preview.style.display = 'block';
+      zone.classList.add('has-image');
+      document.getElementById('fname').textContent = file.name;
+
+      // Hide details, show loader overlay on the image
+      empPanel.classList.remove('visible');
+      emptyState.style.display = 'none';
+      zoneLoader.classList.add('active');
+
+      // Reset attendance btn appearance
+      resetAttendBtn();
+
+      // ── Replace this block with your real Zoho Creator API call ─────────────
+      // const formData = new FormData();
+      // formData.append('photo', file);
+      // fetch('YOUR_ZOHO_CREATOR_ENDPOINT', { method: 'POST', body: formData })
+      //   .then(r => r.json())
+      //   .then(data => populate(data, ev.target.result))
+      //   .catch(() => {
+      //     showToast('Upload failed. Try again.', 'error');
+      //     zoneLoader.classList.remove('active');
+      //     busy = false;
+      //   });
+      // ─────────────────────────────────────────────────────────────────────────
+
+      var config_1 = {
+      app_name: "eo-chennai",
+      form_name: "Attendance_Image_Details",
+      payload: {
+        "data": {
+          
+        }
+      }
+      };
+      try{
+      const add_res = await ZOHO.CREATOR.DATA.addRecords(config_1);
+      if( add_res.code === 3000 ){
+        console.log(add_res?.data?.ID);
+        
+        record_id = add_res?.data?.ID;
+        console.log(record_id);
+        
+        if( record_id ){
+          var config = {
+        app_name: "eo-chennai",
+        report_name: "All_Attendance_Image_Details",
+        id : `${record_id}`,
+        field_name : "Image",
+        file : file
+      };
+      const img_upl = await ZOHO.CREATOR.FILE.uploadFile(config);
+      }
+      }
+      }
+      catch(e){
+        console.log(e);
+        
+      }
+      await delay(17000);
+      var config_2 = {
+        app_name: "eo-chennai",
+        report_name: "All_Attendance_Image_Details",
+        id : `${record_id}`
+      };
+      const aws_resp = await ZOHO.CREATOR.DATA.getRecordById(config_2);
+      console.log(aws_resp);
+      
+      if( aws_resp.code === 3000 ){
+        const resp_data = aws_resp.data;
+        
+        // Check if Member.ID exists (not empty)
+        const memberId = resp_data?.Member?.ID;
+        mem_id = memberId;
+        
+        if( memberId && memberId !== "" ) {
+          populate({
+            name:       resp_data["Member.Name1"]       || '—',
+            email:      resp_data["Member.EA_Email"]     || '—',
+            phone:      resp_data["Member.EA_Mobile_Number"] !== "" 
+                          ? resp_data["Member.EA_Mobile_Number"] 
+                          : (resp_data["Member.Primary_Mobile_No"] || '—'),
+            forum_name: resp_data["Member.Forum"]?.Forum_Name || '—'
+          }, ev.target.result);
+        } else {
+          // No match found
+          zoneLoader.classList.remove('active');
+          busy = false;
+          emptyState.style.display = 'flex';
+          empPanel.classList.remove('visible');
+          showToast('No matches found for this photo.', 'error');
+        }
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  fileInput.addEventListener('change', e => { if (e.target.files[0]) onFile(e.target.files[0]); e.target.value=''; });
+  camInput.addEventListener('change',  e => { if (e.target.files[0]) onFile(e.target.files[0]); e.target.value=''; });
+
+  // Drag & drop
+  zone.addEventListener('dragover',  e => { e.preventDefault(); if (!busy) zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    if (!busy && e.dataTransfer.files[0]) onFile(e.dataTransfer.files[0]);
+  });
+
+  function populate(data, imgSrc) {
+    zoneLoader.classList.remove('active');
+    busy = false;
+
+    // Avatar
+    const initEl = document.getElementById('av-init');
+    const imgEl  = document.getElementById('av-img');
+    const initial = (data.name || 'M').charAt(0).toUpperCase();
+    initEl.textContent = initial;
+
+    if (imgSrc) {
+      imgEl.src = imgSrc;
+      imgEl.style.display = 'block';
+      initEl.style.display = 'none';
+    } else {
+      imgEl.style.display = 'none';
+      initEl.style.display = 'flex';
+    }
+
+    document.getElementById('av-name').textContent  = data.name       || '—';
+    document.getElementById('av-forum').innerHTML   =
+      `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> ${data.forum_name || '—'}`;
+    document.getElementById('ir-email').textContent = data.email       || '—';
+    document.getElementById('ir-phone').textContent = data.phone       || '—';
+    document.getElementById('ir-forum').textContent = data.forum_name  || '—';
+
+    emptyState.style.display = 'none';
+    empPanel.classList.add('visible');
+    showToast('Member profile loaded!', 'success');
+  }
+
+  async function handleAttendance() {
+    const btn = document.getElementById('attend-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Marking attendance…';
+
+    try {
+      var config = {
+        app_name: "eo-chennai",
+        form_name: "Events_Attendance",
+        payload: {
+          data: {
+            Member: mem_id,          
+            Event: event_id
+          }
+        }
+      };
+
+      const res = await ZOHO.CREATOR.DATA.addRecords(config);
+
+      if (res.code === 3000) {
+        showToast('Attendance marked successfully!', 'success');
+
+        await delay(1800);
+        resetFullPage();
+      } else {
+        throw new Error(res.message || 'Unknown error');
+      }
+    } catch (e) {
+      console.error(e);
+      showToast('Failed to mark attendance. Try again.', 'error');
+      btn.disabled = false;
+      resetAttendBtn();
+    }
+  }
+
+  function resetFullPage() {
+    // Reset upload zone
+    zone.classList.remove('has-image');
+    preview.src = '';
+    preview.style.display = 'none';
+    document.getElementById('fname').textContent = 'photo.jpg';
+    zoneLoader.classList.remove('active');
+
+    // Reset right panel
+    empPanel.classList.remove('visible');
+    emptyState.style.display = 'flex';
+
+    // Reset avatar & fields
+    document.getElementById('av-img').style.display = 'none';
+    document.getElementById('av-init').style.display = 'flex';
+    document.getElementById('av-init').textContent = '?';
+    document.getElementById('av-name').textContent = '—';
+    document.getElementById('av-forum').innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> —`;
+    document.getElementById('ir-email').textContent = '—';
+    document.getElementById('ir-phone').textContent = '—';
+    document.getElementById('ir-forum').textContent = '—';
+
+    // Reset state vars
+    record_id = undefined;
+    mem_id    = undefined;
+    busy      = false;
+
+    // Reset button appearance for next use
+    resetAttendBtn();
+  }
+
+  function markAttended() {
+    const btn = document.getElementById('attend-btn');
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Attendance Marked`;
+    btn.style.background = 'linear-gradient(135deg, #14532d, #16a34a)';
+    btn.style.boxShadow  = '0 6px 24px rgba(22,163,74,0.35)';
+    btn.disabled = true;
+  }
+
+  function resetAttendBtn() {
+    const btn = document.getElementById('attend-btn');
+    if (!btn) return;
+    btn.disabled = false;
+    btn.style.background = '';
+    btn.style.boxShadow  = '';
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg> Add Attendance`;
+  }
+
+  let toastTimer;
+  function showToast(msg, type = 'info') {
+    clearTimeout(toastTimer);
+    document.getElementById('toast-msg').textContent = msg;
+    const t = document.getElementById('toast');
+    t.className = 'toast show ' + type;
+    toastTimer = setTimeout(() => { t.className = 'toast'; }, 3600);
+  }
+  let event_id;
+  async function getInit(){
+    let query_param = await ZOHO.CREATOR.UTIL.getQueryParams();
+    event_id = query_param?.event_id;
+    console.log(event_id);
+    
+  }
+  getInit();
+</script>
+</body>
 </html>
