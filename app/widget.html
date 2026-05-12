@@ -4,13 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Employee Check-In</title>
- <script src="https://js.zohostatic.com/creator/widgets/version/2.0/widgetsdk-min.js"></script>
-
+<script src="https://js.zohostatic.com/creator/widgets/version/2.0/widgetsdk-min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Zoho Creator palette */
     --purple:      #6c2bd9;
     --purple-dark: #4a1a9e;
     --purple-mid:  #8b47e8;
@@ -19,633 +17,473 @@
     --purple-glow: rgba(108,43,217,0.35);
     --violet:      #a78bfa;
     --white:       #ffffff;
-    --bg:          #f4f2fb;
-    --surface:     #faf9fd;
-    --card:        #ffffff;
-    --ink:         #1e1130;
-    --ink-mid:     #3d2c60;
-    --muted:       #8b84a3;
-    --border:      rgba(108,43,217,0.12);
-    --border-soft: rgba(30,17,48,0.08);
-    --green:       #15803d;
+    --bg:          #0d0a14;
+    --surface:     #13101e;
+    --card:        #1a1628;
+    --ink:         #f0ecff;
+    --ink-mid:     #c4b8e8;
+    --muted:       #7a6fa0;
+    --border:      rgba(108,43,217,0.22);
+    --border-soft: rgba(167,139,250,0.12);
+    --green:       #4ade80;
     --green2:      #22c55e;
-    --shadow-sm:   0 2px 10px rgba(108,43,217,0.08);
-    --shadow-md:   0 8px 32px rgba(108,43,217,0.14);
-    --shadow-lg:   0 28px 80px rgba(108,43,217,0.20);
+    --shadow-sm:   0 2px 10px rgba(0,0,0,0.3);
+    --shadow-md:   0 8px 32px rgba(0,0,0,0.4);
+    --shadow-lg:   0 28px 80px rgba(0,0,0,0.5);
     --r:           16px;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    min-height: 98vh;
+    min-height: 100vh;
     font-family: 'Outfit', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 5px 5px;
+    padding: 20px;
     background: var(--bg);
     background-image:
-      radial-gradient(ellipse 65% 50% at 10% 30%, rgba(108,43,217,0.07) 0%, transparent 60%),
-      radial-gradient(ellipse 55% 60% at 90% 70%, rgba(167,139,250,0.06) 0%, transparent 60%);
+      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(108,43,217,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 80%, rgba(167,139,250,0.07) 0%, transparent 60%);
   }
 
   .shell {
     width: 100%;
-    max-width: 1060px;
-    display: grid;
-    grid-template-columns: 52% 48%;
+    max-width: 520px;
     background: var(--card);
-    border-radius: 24px;
+    border-radius: 28px;
     overflow: hidden;
     box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
   }
 
-  /* ══════════════════════ LEFT PANEL ══════════════════════ */
-  .left {
-    padding: 44px 40px 40px;
-    display: flex;
-    flex-direction: column;
-    background: linear-gradient(160deg, #1e1130 0%, #2d1a50 60%, #3d2272 100%);
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Decorative blobs */
-  .left::before {
-    content: '';
-    position: absolute;
-    top: -100px; right: -100px;
-    width: 350px; height: 350px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(108,43,217,0.30) 0%, transparent 65%);
-    pointer-events: none;
-  }
-
-  .left::after {
-    content: '';
-    position: absolute;
-    bottom: -60px; left: -60px;
-    width: 240px; height: 240px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 65%);
-    pointer-events: none;
-  }
-
-  /* Brand */
-  .brand {
+  /* ══ HEADER ══ */
+  .header {
+    padding: 28px 32px 20px;
+    background: linear-gradient(160deg, #1e1130 0%, #2d1a50 100%);
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-    gap: 11px;
-    margin-bottom: 32px;
-    position: relative; z-index: 1;
+    gap: 14px;
   }
 
   .brand-mark {
-    width: 38px; height: 38px;
-    border-radius: 10px;
+    width: 42px; height: 42px;
+    border-radius: 12px;
     background: var(--purple);
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 4px 18px rgba(108,43,217,0.55);
     flex-shrink: 0;
   }
+  .brand-mark svg { width: 20px; height: 20px; color: #fff; }
 
-  .brand-mark svg { width: 19px; height: 19px; color: #fff; }
-
-  .brand-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 17px;
-    font-weight: 700;
-    color: #fff;
-  }
-
-  .brand-name span { color: rgba(255,255,255,0.4); font-weight: 400; }
-
-  /* Left heading */
-  .left-head {
-    position: relative; z-index: 1;
-    margin-bottom: 24px;
-  }
-
-  .left-eyebrow {
-    font-size: 10.5px;
+  .header-text {}
+  .header-eyebrow {
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--violet);
-    margin-bottom: 8px;
+    margin-bottom: 3px;
   }
-
-  .left-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 500;
-    color: #fff;
-    line-height: 1.22;
-    margin-bottom: 10px;
-  }
-
-  .left-sub {
-    font-size: 13px;
-    color: rgba(255,255,255,0.40);
-    line-height: 1.7;
-  }
-
-  /* ── Upload Zone ── */
-  .upload-zone {
-    position: relative; z-index: 1;
-    border: 2px dashed rgba(167,139,250,0.30);
-    border-radius: var(--r);
-    flex: 1;
-    min-height: 320px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    overflow: hidden;
-    transition: all 0.32s ease;
-    background: rgba(255,255,255,0.04);
-  }
-
-  .upload-zone:hover {
-    border-color: var(--violet);
-    background: rgba(108,43,217,0.10);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(108,43,217,0.20);
-  }
-
-  .upload-zone.drag-over {
-    border-color: var(--violet);
-    background: rgba(108,43,217,0.15);
-    transform: scale(1.01);
-  }
-
-  .upload-zone.has-image {
-    border-style: solid;
-    border-color: var(--purple-mid);
-    padding: 0;
-    min-height: 340px;
-  }
-
-  .upload-zone.has-image .upload-idle { display: none; }
-
-  .upload-idle {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    padding: 36px 28px;
-    text-align: center;
-  }
-
-  .up-icon {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: rgba(108,43,217,0.22);
-    border: 1.5px solid rgba(167,139,250,0.35);
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.32s ease, background 0.32s ease;
-  }
-
-  .upload-zone:hover .up-icon {
-    transform: translateY(-5px) scale(1.07);
-    background: rgba(108,43,217,0.32);
-  }
-
-  .up-icon svg { width: 32px; height: 32px; color: var(--violet); }
-
-  .upload-idle h3 {
+  .header-title {
     font-family: 'Playfair Display', serif;
     font-size: 20px;
-    font-weight: 500;
-    color: rgba(255,255,255,0.92);
-  }
-
-  .upload-idle p {
-    font-size: 12.5px;
-    color: rgba(255,255,255,0.35);
-    line-height: 1.5;
-    max-width: 200px;
-  }
-
-  .btn-row {
-    display: flex;
-    gap: 9px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .btn-pill {
-    padding: 9px 20px;
-    border-radius: 50px;
-    font-family: 'Outfit', sans-serif;
-    font-size: 12.5px;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1.5px solid rgba(167,139,250,0.30);
-    background: rgba(108,43,217,0.18);
-    color: var(--violet);
-    display: flex; align-items: center; gap: 7px;
-    transition: all 0.22s;
-    backdrop-filter: blur(4px);
-  }
-
-  .btn-pill:hover {
-    border-color: var(--violet);
-    background: rgba(108,43,217,0.30);
-    transform: translateY(-1px);
-  }
-
-  /* Preview */
-  #preview-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-    min-height: 340px;
-    border-radius: 14px;
-  }
-
-  .img-bar {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    padding: 16px 18px;
-    background: linear-gradient(transparent, rgba(10,4,24,0.80));
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 0 0 14px 14px;
-  }
-
-  .upload-zone.has-image .img-bar { display: flex; }
-
-  .img-bar-left { display: flex; align-items: center; gap: 8px; }
-
-  .img-bar-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--violet);
-    animation: blink 1.6s ease-in-out infinite;
-  }
-
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-  .img-bar-name {
-    font-size: 12px;
-    color: rgba(255,255,255,0.82);
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 150px;
-  }
-
-  .btn-chg {
-    font-size: 11px;
-    padding: 5px 14px;
-    border-radius: 50px;
-    border: 1px solid rgba(255,255,255,0.28);
-    background: rgba(255,255,255,0.12);
+    font-weight: 600;
     color: #fff;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-    transition: background 0.2s;
-    white-space: nowrap;
-    flex-shrink: 0;
   }
 
-  .btn-chg:hover { background: rgba(255,255,255,0.22); }
+  /* ══ CAMERA SECTION ══ */
+  .camera-section {
+    padding: 24px 28px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
 
-  /* Loading overlay on zone */
-  .zone-loading {
+  .camera-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    align-self: flex-start;
+  }
+
+  .camera-wrapper {
+    width: 100%;
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #080610;
+    border: 1.5px solid var(--border);
+    box-shadow: 0 0 0 4px rgba(108,43,217,0.06), var(--shadow-md);
+  }
+
+  #live-video {
+    width: 100%;
+    display: block;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    transform: scaleX(-1); /* Mirror for selfie */
+    border-radius: 17px;
+  }
+
+  /* Corner brackets */
+  .cam-corner {
+    position: absolute;
+    width: 28px; height: 28px;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .cam-corner--tl { top: 14px; left: 14px; border-top: 2.5px solid var(--violet); border-left: 2.5px solid var(--violet); border-radius: 4px 0 0 0; }
+  .cam-corner--tr { top: 14px; right: 14px; border-top: 2.5px solid var(--violet); border-right: 2.5px solid var(--violet); border-radius: 0 4px 0 0; }
+  .cam-corner--bl { bottom: 14px; left: 14px; border-bottom: 2.5px solid var(--violet); border-left: 2.5px solid var(--violet); border-radius: 0 0 0 4px; }
+  .cam-corner--br { bottom: 14px; right: 14px; border-bottom: 2.5px solid var(--violet); border-right: 2.5px solid var(--violet); border-radius: 0 0 4px 0; }
+
+  /* Live dot */
+  .live-badge {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 4px 12px;
+    z-index: 3;
+  }
+  .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #ef4444;
+    animation: blink 1.4s ease-in-out infinite;
+  }
+  .live-text {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.85);
+    text-transform: uppercase;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+  /* Camera loading */
+  .cam-loading {
     position: absolute;
     inset: 0;
-    background: rgba(30,17,48,0.72);
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 14px;
-    z-index: 10;
-    border-radius: 14px;
-    backdrop-filter: blur(3px);
+    background: #080610;
+    z-index: 5;
   }
-
-  .zone-loading.active { display: flex; }
-
-  .zone-loading-text {
-    font-size: 13px;
-    color: var(--violet);
-    font-weight: 500;
-    letter-spacing: 0.04em;
-  }
-
+  .cam-loading.hidden { display: none; }
+  .cam-loading-text { font-size: 13px; color: var(--muted); }
   .ring-spinner {
-    width: 44px; height: 44px;
-    border: 3px solid rgba(167,139,250,0.25);
+    width: 40px; height: 40px;
+    border: 3px solid rgba(167,139,250,0.2);
     border-top-color: var(--violet);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
-
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  #file-input, #camera-input { display: none; }
-
-  /* ══════════════════════ RIGHT PANEL ══════════════════════ */
-  .right {
-    padding: 44px 38px 40px;
-    display: flex;
-    flex-direction: column;
-    background: var(--surface);
-  }
-
-  .right-header { margin-bottom: 26px; }
-
-  .right-eyebrow {
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--purple);
-    margin-bottom: 6px;
-  }
-
-  .right-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    font-weight: 500;
-    color: var(--ink);
-    line-height: 1.2;
-  }
-
-  /* Empty state */
-  .empty-state {
-    flex: 1;
-    display: flex;
+  /* Processing overlay */
+  .cam-processing {
+    position: absolute;
+    inset: 0;
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    gap: 15px;
-    padding: 30px 20px;
+    gap: 16px;
+    background: rgba(13,10,20,0.82);
+    backdrop-filter: blur(4px);
+    z-index: 6;
+    border-radius: 17px;
   }
+  .cam-processing.active { display: flex; }
+  .cam-processing-text { font-size: 14px; color: var(--violet); font-weight: 500; }
 
-  .empty-graphic {
-    width: 96px; height: 96px;
+  /* Capture button */
+  .capture-btn {
+    width: 72px; height: 72px;
     border-radius: 50%;
-    background: var(--purple-lt);
-    border: 2px dashed var(--border);
-    display: flex; align-items: center; justify-content: center;
-    position: relative;
-  }
-
-  .empty-graphic svg { width: 36px; height: 36px; color: var(--purple); opacity: 0.5; }
-
-  .empty-graphic::after {
-    content: '';
-    position: absolute;
-    inset: -8px;
-    border-radius: 50%;
-    border: 1px dashed rgba(108,43,217,0.15);
-  }
-
-  .empty-state h4 {
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--ink);
-  }
-
-  .empty-state p {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.65;
-    max-width: 210px;
-  }
-
-  /* Employee panel */
-  .emp-panel {
-    display: none;
-    flex-direction: column;
-    flex: 1;
-  }
-
-  .emp-panel.visible {
-    display: flex;
-    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(22px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Avatar card */
-  .avatar-card {
+    border: 3px solid var(--purple-mid);
+    background: transparent;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 18px 18px;
-    background: linear-gradient(135deg, var(--purple-lt), rgba(167,139,250,0.06));
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    margin-bottom: 16px;
-    box-shadow: var(--shadow-sm);
-    animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both;
+    justify-content: center;
+    position: relative;
+    transition: all 0.25s;
+    box-shadow: 0 0 0 0 rgba(108,43,217,0.4);
   }
-
-  .av-img {
-    width: 58px; height: 58px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2.5px solid var(--purple);
-    display: none;
-    flex-shrink: 0;
-    box-shadow: 0 0 0 4px var(--purple-lt);
+  .capture-btn:hover:not(:disabled) {
+    border-color: var(--violet);
+    box-shadow: 0 0 0 8px rgba(108,43,217,0.15), 0 6px 24px rgba(108,43,217,0.35);
+    transform: scale(1.05);
   }
+  .capture-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  .av-init {
-    width: 58px; height: 58px;
+  .capture-inner {
+    width: 50px; height: 50px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--purple-dark), var(--purple));
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    font-weight: 700;
-    color: #fff;
-    flex-shrink: 0;
-    border: 2.5px solid var(--purple-mid);
-    box-shadow: 0 0 0 4px var(--purple-lt), 0 4px 16px rgba(108,43,217,0.25);
-  }
-
-  .av-body { flex: 1; min-width: 0; }
-
-  .av-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 17px;
-    font-weight: 500;
-    color: var(--ink);
-    margin-bottom: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .av-forum {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 5px;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(108,43,217,0.5);
+    transition: transform 0.15s;
+  }
+  .capture-btn:active .capture-inner { transform: scale(0.93); }
+  .capture-inner svg { width: 22px; height: 22px; color: #fff; }
+
+  .capture-label {
     font-size: 11.5px;
     font-weight: 500;
-    color: var(--purple);
-    background: var(--purple-lt);
-    padding: 3px 10px;
-    border-radius: 50px;
-    border: 1px solid var(--purple-md);
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-top: -6px;
   }
 
-  .av-badge {
+  /* ══ SUCCESS POPUP ══ */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8,6,16,0.80);
+    backdrop-filter: blur(6px);
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 10.5px;
-    font-weight: 600;
-    color: var(--green);
-    background: rgba(21,128,61,0.08);
-    padding: 4px 10px;
-    border-radius: 50px;
-    border: 1px solid rgba(21,128,61,0.18);
-    width: fit-content;
-    margin-left: auto;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .overlay.active {
+    opacity: 1;
+    pointer-events: all;
   }
 
-  /* Info rows */
-  .info-stack {
+  .popup {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transform: translateY(20px) scale(0.97);
+    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+  }
+  .overlay.active .popup {
+    transform: translateY(0) scale(1);
+  }
+
+  /* Success popup */
+  .popup-success .popup-header {
+    background: linear-gradient(135deg, #052814, #0a3d1f);
+    padding: 32px 28px 24px;
+    text-align: center;
+    border-bottom: 1px solid rgba(74,222,128,0.15);
+  }
+  .success-icon {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: rgba(74,222,128,0.12);
+    border: 2px solid rgba(74,222,128,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    box-shadow: 0 0 24px rgba(74,222,128,0.2);
+  }
+  .success-icon svg { width: 28px; height: 28px; color: var(--green); }
+  .popup-success-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .popup-success-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+  }
+  .popup-success-sub strong {
+    color: var(--green);
+    font-weight: 600;
+  }
+  .popup-success-body {
+    padding: 20px 28px 28px;
+    text-align: center;
+  }
+  .btn-done {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #052814, #15803d);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 4px 18px rgba(22,163,74,0.28);
+  }
+  .btn-done:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(22,163,74,0.38); }
+
+  /* Manual popup */
+  .popup-manual .popup-header {
+    background: linear-gradient(160deg, #1e1130 0%, #2d1a50 100%);
+    padding: 28px 28px 22px;
+    border-bottom: 1px solid var(--border);
+  }
+  .popup-manual-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .popup-manual-sub {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.5;
+  }
+  .popup-manual-body {
+    padding: 22px 28px 28px;
     display: flex;
     flex-direction: column;
-    gap: 9px;
-    margin-bottom: 16px;
+    gap: 16px;
+    max-height: 70vh;
+    overflow-y: auto;
   }
+  .popup-manual-body::-webkit-scrollbar { width: 4px; }
+  .popup-manual-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-  .info-row {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    padding: 13px 15px;
-    background: var(--card);
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    transition: all 0.22s ease;
-  }
-
-  .info-row:nth-child(1) { animation: fadeUp 0.42s cubic-bezier(0.16,1,0.3,1) 0.06s both; }
-  .info-row:nth-child(2) { animation: fadeUp 0.42s cubic-bezier(0.16,1,0.3,1) 0.11s both; }
-  .info-row:nth-child(3) { animation: fadeUp 0.42s cubic-bezier(0.16,1,0.3,1) 0.16s both; }
-
-  .info-row:hover {
-    border-color: var(--border);
-    transform: translateX(4px);
-    box-shadow: 0 4px 16px rgba(108,43,217,0.08);
-  }
-
-  .ir-icon {
-    width: 38px; height: 38px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--purple-dark), var(--purple));
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 3px 10px rgba(108,43,217,0.28);
-  }
-
-  .ir-icon svg { width: 15px; height: 15px; color: rgba(255,255,255,0.9); }
-
-  .ir-body { flex: 1; min-width: 0; }
-
-  .ir-label {
-    font-size: 10px;
+  /* Form fields */
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+  .field-label {
+    font-size: 10.5px;
     font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 2px;
   }
 
-  .ir-value {
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--ink);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  /* Attendance button */
-  .btn-attend {
+  .field-select, .field-input {
     width: 100%;
-    padding: 15px 20px;
-    border-radius: 13px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border-soft);
+    background: rgba(255,255,255,0.04);
+    color: var(--ink);
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.22s, box-shadow 0.22s;
+    -webkit-appearance: none;
+  }
+  .field-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a6fa0' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+  .field-select option { background: #1a1628; color: var(--ink); }
+  .field-select:focus, .field-input:focus {
+    border-color: var(--purple-mid);
+    box-shadow: 0 0 0 3px rgba(108,43,217,0.15);
+  }
+  .field-select:disabled, .field-input:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* OR divider */
+  .or-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .or-divider::before, .or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-soft);
+  }
+
+  /* Manual section */
+  .manual-fields { display: flex; flex-direction: column; gap: 10px; }
+
+  /* Mark button */
+  .btn-mark {
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 12px;
     border: none;
     background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 50%, var(--purple-mid) 100%);
-    background-size: 200% 100%;
     color: #fff;
     font-family: 'Outfit', sans-serif;
     font-size: 14.5px;
     font-weight: 600;
-    letter-spacing: 0.03em;
     cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 9px;
-    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    transition: all 0.28s;
     box-shadow: 0 6px 24px rgba(108,43,217,0.38);
-    position: relative;
-    overflow: hidden;
-    animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.22s both;
-    margin-top: auto;
+    margin-top: 4px;
   }
-
-  .btn-attend::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.14) 0%, transparent 55%);
-    opacity: 0;
-    transition: opacity 0.3s;
+  .btn-mark:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 36px rgba(108,43,217,0.5);
   }
+  .btn-mark:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  .btn-attend:hover::before { opacity: 1; }
-
-  .btn-attend:hover:not(:disabled) {
-    background-position: right center;
-    transform: translateY(-3px);
-    box-shadow: 0 14px 40px rgba(108,43,217,0.48);
+  .btn-cancel {
+    width: 100%;
+    padding: 11px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border-soft);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.22s;
   }
-
-  .btn-attend:active { transform: translateY(-1px); }
-
-  .btn-attend:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  /* Spinner */
-  .spinner {
-    width: 17px; height: 17px;
-    border: 2px solid rgba(255,255,255,0.28);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-  }
+  .btn-cancel:hover { border-color: var(--border); color: var(--ink-mid); background: rgba(255,255,255,0.03); }
 
   /* Toast */
   .toast {
     position: fixed;
     bottom: 28px; left: 50%;
     transform: translateX(-50%) translateY(14px);
-    background: var(--ink);
-    color: #fff;
+    background: var(--card);
+    color: var(--ink);
     font-family: 'Outfit', sans-serif;
     font-size: 13px;
     padding: 11px 22px;
@@ -656,447 +494,404 @@
     transition: all 0.38s cubic-bezier(0.16,1,0.3,1);
     display: flex; align-items: center; gap: 8px;
     z-index: 9999;
-    border: 1px solid rgba(255,255,255,0.07);
+    border: 1px solid var(--border);
     max-width: 92vw;
   }
-
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast.success { border-color: var(--purple-mid); }
-  .toast.error   { border-color: #f87171; }
+  .toast.error { border-color: #f87171; }
 
-  /* ── Tablet / Mobile ── */
-  @media (max-width: 860px) {
-    body { padding: 14px; align-items: flex-start; }
-    .shell { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
-    .left  { padding: 36px 26px 30px; }
-    .right { padding: 30px 26px 36px; }
-    .left-title, .right-title { font-size: 24px; }
-    .upload-zone { min-height: 260px; }
-    #preview-img { min-height: 260px; }
-    .left::before, .left::after { opacity: 0.6; }
-    .btn-attend { margin-top: 16px; }
-  }
+  /* Canvas (hidden, used for capture) */
+  #snap-canvas { display: none; }
 
-  @media (max-width: 460px) {
-    .left, .right { padding: 24px 18px; }
-    .left-title, .right-title { font-size: 21px; }
-    .btn-row { flex-direction: column; }
-    .btn-pill { justify-content: center; }
-    .toast { font-size: 12px; }
+  @media (max-width: 480px) {
+    body { padding: 10px; }
+    .camera-section { padding: 18px 18px 16px; }
+    .header { padding: 22px 22px 18px; }
+    .popup-manual-body, .popup-success-body { padding: 18px 20px 22px; }
+    .popup-manual .popup-header, .popup-success .popup-header { padding: 24px 20px 20px; }
   }
+  /* ══ CUSTOM DROPDOWN ══ */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-trigger {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-soft);
+  background: rgba(255,255,255,0.04);
+  color: var(--ink);
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition: border-color 0.22s, box-shadow 0.22s;
+  user-select: none;
+}
+.dropdown-trigger:hover {
+  border-color: var(--purple-mid);
+}
+.dropdown-trigger.open {
+  border-color: var(--purple-mid);
+  box-shadow: 0 0 0 3px rgba(108,43,217,0.15);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.dropdown-trigger.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.dropdown-trigger-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.dropdown-trigger-text.selected {
+  color: var(--ink);
+}
+
+.dropdown-chevron {
+  flex-shrink: 0;
+  color: var(--muted);
+  transition: transform 0.22s;
+}
+.dropdown-trigger.open .dropdown-chevron {
+  transform: rotate(180deg);
+  color: var(--violet);
+}
+
+.dropdown-panel {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0; right: 0;
+  background: #1e1a2e;
+  border: 1.5px solid var(--purple-mid);
+  border-top: none;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  z-index: 200;
+  overflow: hidden;
+}
+.dropdown-panel.open { display: block; }
+
+.dropdown-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 13px;
+  border-bottom: 1px solid var(--border-soft);
+  background: rgba(108,43,217,0.07);
+}
+.dropdown-search-wrap svg { color: var(--muted); flex-shrink: 0; }
+
+.dropdown-search {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--ink);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+}
+.dropdown-search::placeholder { color: var(--muted); }
+
+.dropdown-list {
+  max-height: 210px;
+  overflow-y: auto;
+}
+.dropdown-list::-webkit-scrollbar { width: 4px; }
+.dropdown-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.dropdown-item {
+  padding: 11px 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: background 0.15s;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.dropdown-item:last-child { border-bottom: none; }
+.dropdown-item:hover { background: rgba(108,43,217,0.14); }
+.dropdown-item.active { background: rgba(108,43,217,0.22); }
+
+.dropdown-item-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dropdown-item-email {
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-empty {
+  padding: 18px 14px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+.dropdown-clear {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(167,139,250,0.15);
+  color: var(--muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background 0.18s, color 0.18s;
+}
+.dropdown-clear:hover {
+  background: rgba(248,113,113,0.2);
+  color: #f87171;
+}
+.dropdown-clear.visible {
+  display: flex;
+}
+
+/* ══ SUCCESS NOTIFICATION ══ */
+.success-notif {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #052814, #0a3d1f);
+  border: 1px solid rgba(74,222,128,0.25);
+  border-radius: 16px;
+  padding: 14px 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(74,222,128,0.1);
+  z-index: 9999;
+  min-width: 280px;
+  max-width: 340px;
+  transform: translateX(calc(100% + 32px));
+  opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease;
+}
+.success-notif.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+.success-notif-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(74,222,128,0.12);
+  border: 1.5px solid rgba(74,222,128,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--green);
+  box-shadow: 0 0 12px rgba(74,222,128,0.2);
+}
+.success-notif-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 2px;
+}
+.success-notif-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.4;
+}
+.success-notif-sub strong {
+  color: var(--green);
+  font-weight: 600;
+}
+
+/* Progress bar */
+.success-notif::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 3px;
+  width: 100%;
+  background: rgba(74,222,128,0.4);
+  border-radius: 0 0 16px 16px;
+  transform-origin: left;
+  animation: none;
+}
+.success-notif.show::after {
+  animation: notif-progress 2.8s linear forwards;
+}
+@keyframes notif-progress {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
 </style>
 </head>
 <body>
 
 <div class="shell">
-
-  <!-- ══ LEFT PANEL ══ -->
-  <div class="left">
-    <div class="brand">
-      <div class="brand-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </div>
-      <div class="brand-name">EO Chennai <span>Portal</span></div>
+  <!-- Header -->
+  <div class="header">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     </div>
-
-    <div class="left-head">
-      <p class="left-eyebrow">Member Check-In</p>
-      <h1 class="left-title">Upload Your Photo</h1>
-      <p class="left-sub">Choose from your gallery or take a new portrait — your details will load instantly.</p>
+    <div class="header-text">
+      <div class="header-eyebrow">Member Check-In</div>
+      <div class="header-title">EO Chennai Portal</div>
     </div>
+  </div>
 
-    <!-- Upload Zone -->
-    <div class="upload-zone" id="upload-zone" onclick="handleZoneClick()">
-      <div class="upload-idle">
-        <div class="up-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-          </svg>
-        </div>
-        <h3>Drop your photo here</h3>
-        <p>JPG, PNG or WebP — up to 10 MB</p>
-        <div class="btn-row">
-          <button class="btn-pill" onclick="triggerFile(event,'gallery')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Gallery
-          </button>
-          <button class="btn-pill" onclick="triggerFile(event,'camera')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            Camera
-          </button>
-        </div>
+  <!-- Camera Section -->
+  <div class="camera-section">
+    <div class="camera-label">Live Camera</div>
+
+    <div class="camera-wrapper">
+      <video id="live-video" autoplay playsinline muted></video>
+      <canvas id="snap-canvas"></canvas>
+
+      <!-- Corner brackets -->
+      <div class="cam-corner cam-corner--tl"></div>
+      <div class="cam-corner cam-corner--tr"></div>
+      <div class="cam-corner cam-corner--bl"></div>
+      <div class="cam-corner cam-corner--br"></div>
+
+      <!-- Live badge -->
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        <span class="live-text">Live</span>
       </div>
 
-      <img id="preview-img" src="" alt="Preview"/>
-
-      <!-- Loading overlay shown while API call is in progress -->
-      <div class="zone-loading" id="zone-loading">
+      <!-- Camera loading -->
+      <div class="cam-loading" id="cam-loading">
         <div class="ring-spinner"></div>
-        <div class="zone-loading-text">Fetching your details…</div>
+        <div class="cam-loading-text">Starting camera…</div>
       </div>
 
-      <div class="img-bar">
-        <div class="img-bar-left">
-          <div class="img-bar-dot"></div>
-          <span class="img-bar-name" id="fname">photo.jpg</span>
-        </div>
-        <button class="btn-chg" onclick="handleZoneClick()">Change</button>
+      <!-- Processing overlay -->
+      <div class="cam-processing" id="cam-processing">
+        <div class="ring-spinner"></div>
+        <div class="cam-processing-text">Identifying member…</div>
       </div>
     </div>
 
-    <input type="file" id="file-input" accept="image/*">
-    <input type="file" id="camera-input" accept="image/*" capture="user">
+    <!-- Capture button -->
+    <button class="capture-btn" id="capture-btn" onclick="capturePhoto()" disabled>
+      <div class="capture-inner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </div>
+    </button>
+    <div class="capture-label">Tap to capture</div>
   </div>
+</div>
 
-  <!-- ══ RIGHT PANEL ══ -->
-  <div class="right">
-    <div class="right-header">
-      <p class="right-eyebrow">Employee Record</p>
-      <h2 class="right-title">Member Details</h2>
+<!-- ══ SUCCESS POPUP ══ -->
+<!-- ══ SUCCESS NOTIFICATION ══ -->
+<div class="success-notif" id="success-notif">
+  <div class="success-notif-icon">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <div class="success-notif-text">
+    <div class="success-notif-title">Attendance Marked!</div>
+    <div class="success-notif-sub">Hi <strong id="success-name">Member</strong>, you're marked present.</div>
+  </div>
+</div>
+<!-- ══ MANUAL POPUP ══ -->
+<div class="overlay" id="overlay-manual">
+  <div class="popup popup-manual">
+    <div class="popup-header">
+      <div class="popup-manual-title">No Match Found</div>
+      <div class="popup-manual-sub">We couldn't identify you from the photo. Please select your name from the list or fill in your details below.</div>
     </div>
+    <div class="popup-manual-body">
 
-    <!-- Empty state -->
-    <div class="empty-state" id="empty-state">
-      <div class="empty-graphic">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <!-- Member dropdown -->
+      <div class="field-group">
+  <div class="field-label">Select Member</div>
+  <div class="custom-dropdown" id="custom-dropdown">
+    <div class="dropdown-trigger" id="dropdown-trigger" onclick="toggleDropdown()">
+  <span class="dropdown-trigger-text" id="dropdown-display">— Choose a member —</span>
+  <button class="dropdown-clear" id="dropdown-clear" onclick="handleClearDropdown(event)" title="Clear selection">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <svg class="dropdown-chevron" id="dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+</div>
+    <div class="dropdown-panel" id="dropdown-panel">
+      <div class="dropdown-search-wrap">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input
+          type="text"
+          class="dropdown-search"
+          id="dropdown-search"
+          placeholder="Search by name or email…"
+          oninput="filterMembers()"
+          onclick="event.stopPropagation()"
+        >
       </div>
-      <h4>No Profile Loaded</h4>
-      <p>Select or capture a photo on the left — your information will appear here automatically.</p>
+      <div class="dropdown-list" id="dropdown-list">
+        <div class="dropdown-empty">No members loaded yet</div>
+      </div>
     </div>
+  </div>
+  <input type="hidden" id="member-dropdown-hidden" value="">
+</div>
 
-    <!-- Employee panel -->
-    <div class="emp-panel" id="emp-panel">
-      <div class="avatar-card">
-        <img id="av-img" class="av-img" src="" alt=""/>
-        <div class="av-init" id="av-init">?</div>
-        <div class="av-body">
-          <div class="av-name" id="av-name">—</div>
-          <div class="av-forum" id="av-forum">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            —
-          </div>
-        </div>
-        <div class="av-badge">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          Verified
-        </div>
-      </div>
+      <div class="or-divider">or</div>
 
-      <div class="info-stack">
-        <div class="info-row">
-          <div class="ir-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          </div>
-          <div class="ir-body">
-            <div class="ir-label">Email Address</div>
-            <div class="ir-value" id="ir-email">—</div>
-          </div>
+      <!-- Manual fields -->
+      <div class="manual-fields">
+        <div class="field-group">
+          <div class="field-label">Full Name</div>
+          <input type="text" class="field-input" id="manual-name" placeholder="Your full name" oninput="onManualChange()">
         </div>
-
-        <div class="info-row">
-          <div class="ir-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.58 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.54a16 16 0 0 0 6.29 6.29l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          </div>
-          <div class="ir-body">
-            <div class="ir-label">Mobile Number</div>
-            <div class="ir-value" id="ir-phone">—</div>
-          </div>
+        <div class="field-group">
+          <div class="field-label">Mobile Number</div>
+          <input type="tel" class="field-input" id="manual-phone" placeholder="+91 00000 00000" oninput="onManualChange()">
         </div>
-
-        <div class="info-row">
-          <div class="ir-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <div class="ir-body">
-            <div class="ir-label">Forum Name</div>
-            <div class="ir-value" id="ir-forum">—</div>
-          </div>
+        <div class="field-group">
+          <div class="field-label">Email Address</div>
+          <input type="email" class="field-input" id="manual-email" placeholder="you@example.com" oninput="onManualChange()">
         </div>
       </div>
 
-      <!-- Add Attendance -->
-      <button class="btn-attend" id="attend-btn" onclick="handleAttendance()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-          <line x1="16" y1="2" x2="16" y2="6"/>
-          <line x1="8" y1="2" x2="8" y2="6"/>
-          <line x1="3" y1="10" x2="21" y2="10"/>
-          <line x1="12" y1="14" x2="12" y2="18"/>
-          <line x1="10" y1="16" x2="14" y2="16"/>
-        </svg>
-        Add Attendance
+      <!-- Actions -->
+      <button class="btn-mark" id="mark-btn" onclick="handleManualAttendance()" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+        Mark Attendance
       </button>
+      <button class="btn-cancel" onclick="closeManualPopup()">Cancel</button>
     </div>
   </div>
-
 </div>
 
 <!-- Toast -->
 <div class="toast" id="toast">
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
   <span id="toast-msg">Done!</span>
 </div>
 
 <script>
-  const zone       = document.getElementById('upload-zone');
-  const fileInput  = document.getElementById('file-input');
-  const camInput   = document.getElementById('camera-input');
-  const preview    = document.getElementById('preview-img');
-  const emptyState = document.getElementById('empty-state');
-  const empPanel   = document.getElementById('emp-panel');
-  const zoneLoader = document.getElementById('zone-loading');
-
+  /* ─── State ─── */
+  let event_id, record_id, mem_id;
+  let members = []; // [{id, name}]
   let busy = false;
 
-  function handleZoneClick() {
-    if (busy) return;
-    fileInput.click();
-  }
-
-  function triggerFile(e, src) {
-    e.stopPropagation();
-    if (busy) return;
-    src === 'camera' ? camInput.click() : fileInput.click();
-  }
-  let record_id;
-  let mem_id;
-  function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-  async function onFile(file) {
-    if (!file || !file.type.startsWith('image/')) {
-      showToast('Please select a valid image file.', 'error'); return;
-    }
-
-    busy = true;
-
-    const reader = new FileReader();
-    reader.onload = async ev => {
-      // Show preview immediately
-      preview.src = ev.target.result;
-      preview.style.display = 'block';
-      zone.classList.add('has-image');
-      document.getElementById('fname').textContent = file.name;
-
-      // Hide details, show loader overlay on the image
-      empPanel.classList.remove('visible');
-      emptyState.style.display = 'none';
-      zoneLoader.classList.add('active');
-
-      // Reset attendance btn appearance
-      resetAttendBtn();
-
-      // ── Replace this block with your real Zoho Creator API call ─────────────
-      // const formData = new FormData();
-      // formData.append('photo', file);
-      // fetch('YOUR_ZOHO_CREATOR_ENDPOINT', { method: 'POST', body: formData })
-      //   .then(r => r.json())
-      //   .then(data => populate(data, ev.target.result))
-      //   .catch(() => {
-      //     showToast('Upload failed. Try again.', 'error');
-      //     zoneLoader.classList.remove('active');
-      //     busy = false;
-      //   });
-      // ─────────────────────────────────────────────────────────────────────────
-
-      var config_1 = {
-      app_name: "eo-chennai",
-      form_name: "Attendance_Image_Details",
-      payload: {
-        "data": {
-          
-        }
-      }
-      };
-      try{
-      const add_res = await ZOHO.CREATOR.DATA.addRecords(config_1);
-      if( add_res.code === 3000 ){
-        console.log(add_res?.data?.ID);
-        
-        record_id = add_res?.data?.ID;
-        console.log(record_id);
-        
-        if( record_id ){
-          var config = {
-        app_name: "eo-chennai",
-        report_name: "All_Attendance_Image_Details",
-        id : `${record_id}`,
-        field_name : "Image",
-        file : file
-      };
-      const img_upl = await ZOHO.CREATOR.FILE.uploadFile(config);
-      }
-      }
-      }
-      catch(e){
-        console.log(e);
-        
-      }
-      await delay(17000);
-      var config_2 = {
-        app_name: "eo-chennai",
-        report_name: "All_Attendance_Image_Details",
-        id : `${record_id}`
-      };
-      const aws_resp = await ZOHO.CREATOR.DATA.getRecordById(config_2);
-      console.log(aws_resp);
-      
-      if( aws_resp.code === 3000 ){
-        const resp_data = aws_resp.data;
-        
-        // Check if Member.ID exists (not empty)
-        const memberId = resp_data?.Member?.ID;
-        mem_id = memberId;
-        
-        if( memberId && memberId !== "" ) {
-          populate({
-            name:       resp_data["Member.Name1"]       || '—',
-            email:      resp_data["Member.EA_Email"]     || '—',
-            phone:      resp_data["Member.EA_Mobile_Number"] !== "" 
-                          ? resp_data["Member.EA_Mobile_Number"] 
-                          : (resp_data["Member.Primary_Mobile_No"] || '—'),
-            forum_name: resp_data["Member.Forum"]?.Forum_Name || '—'
-          }, ev.target.result);
-        } else {
-          // No match found
-          zoneLoader.classList.remove('active');
-          busy = false;
-          emptyState.style.display = 'flex';
-          empPanel.classList.remove('visible');
-          showToast('No matches found for this photo.', 'error');
-        }
-      }
-    };
-    reader.readAsDataURL(file);
-  }
-
-  fileInput.addEventListener('change', e => { if (e.target.files[0]) onFile(e.target.files[0]); e.target.value=''; });
-  camInput.addEventListener('change',  e => { if (e.target.files[0]) onFile(e.target.files[0]); e.target.value=''; });
-
-  // Drag & drop
-  zone.addEventListener('dragover',  e => { e.preventDefault(); if (!busy) zone.classList.add('drag-over'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-  zone.addEventListener('drop', e => {
-    e.preventDefault();
-    zone.classList.remove('drag-over');
-    if (!busy && e.dataTransfer.files[0]) onFile(e.dataTransfer.files[0]);
-  });
-
-  function populate(data, imgSrc) {
-    zoneLoader.classList.remove('active');
-    busy = false;
-
-    // Avatar
-    const initEl = document.getElementById('av-init');
-    const imgEl  = document.getElementById('av-img');
-    const initial = (data.name || 'M').charAt(0).toUpperCase();
-    initEl.textContent = initial;
-
-    if (imgSrc) {
-      imgEl.src = imgSrc;
-      imgEl.style.display = 'block';
-      initEl.style.display = 'none';
-    } else {
-      imgEl.style.display = 'none';
-      initEl.style.display = 'flex';
-    }
-
-    document.getElementById('av-name').textContent  = data.name       || '—';
-    document.getElementById('av-forum').innerHTML   =
-      `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> ${data.forum_name || '—'}`;
-    document.getElementById('ir-email').textContent = data.email       || '—';
-    document.getElementById('ir-phone').textContent = data.phone       || '—';
-    document.getElementById('ir-forum').textContent = data.forum_name  || '—';
-
-    emptyState.style.display = 'none';
-    empPanel.classList.add('visible');
-    showToast('Member profile loaded!', 'success');
-  }
-
-  async function handleAttendance() {
-    const btn = document.getElementById('attend-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<div class="spinner"></div> Marking attendance…';
-
-    try {
-      var config = {
-        app_name: "eo-chennai",
-        form_name: "Events_Attendance",
-        payload: {
-          data: {
-            Member: mem_id,          
-            Event: event_id
-          }
-        }
-      };
-
-      const res = await ZOHO.CREATOR.DATA.addRecords(config);
-
-      if (res.code === 3000) {
-        showToast('Attendance marked successfully!', 'success');
-
-        await delay(1800);
-        resetFullPage();
-      } else {
-        throw new Error(res.message || 'Unknown error');
-      }
-    } catch (e) {
-      console.error(e);
-      showToast('Failed to mark attendance. Try again.', 'error');
-      btn.disabled = false;
-      resetAttendBtn();
-    }
-  }
-
-  function resetFullPage() {
-    // Reset upload zone
-    zone.classList.remove('has-image');
-    preview.src = '';
-    preview.style.display = 'none';
-    document.getElementById('fname').textContent = 'photo.jpg';
-    zoneLoader.classList.remove('active');
-
-    // Reset right panel
-    empPanel.classList.remove('visible');
-    emptyState.style.display = 'flex';
-
-    // Reset avatar & fields
-    document.getElementById('av-img').style.display = 'none';
-    document.getElementById('av-init').style.display = 'flex';
-    document.getElementById('av-init').textContent = '?';
-    document.getElementById('av-name').textContent = '—';
-    document.getElementById('av-forum').innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> —`;
-    document.getElementById('ir-email').textContent = '—';
-    document.getElementById('ir-phone').textContent = '—';
-    document.getElementById('ir-forum').textContent = '—';
-
-    // Reset state vars
-    record_id = undefined;
-    mem_id    = undefined;
-    busy      = false;
-
-    // Reset button appearance for next use
-    resetAttendBtn();
-  }
-
-  function markAttended() {
-    const btn = document.getElementById('attend-btn');
-    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Attendance Marked`;
-    btn.style.background = 'linear-gradient(135deg, #14532d, #16a34a)';
-    btn.style.boxShadow  = '0 6px 24px rgba(22,163,74,0.35)';
-    btn.disabled = true;
-  }
-
-  function resetAttendBtn() {
-    const btn = document.getElementById('attend-btn');
-    if (!btn) return;
-    btn.disabled = false;
-    btn.style.background = '';
-    btn.style.boxShadow  = '';
-    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg> Add Attendance`;
-  }
+  /* ─── Helpers ─── */
+  function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
   let toastTimer;
   function showToast(msg, type = 'info') {
@@ -1104,16 +899,474 @@
     document.getElementById('toast-msg').textContent = msg;
     const t = document.getElementById('toast');
     t.className = 'toast show ' + type;
-    toastTimer = setTimeout(() => { t.className = 'toast'; }, 3600);
+    toastTimer = setTimeout(() => { t.className = 'toast'; }, 3800);
   }
-  let event_id;
-  async function getInit(){
-    let query_param = await ZOHO.CREATOR.UTIL.getQueryParams();
-    event_id = query_param?.event_id;
-    console.log(event_id);
+
+  /* ─── Camera init ─── */
+  async function startCamera() {
+    const video = document.getElementById('live-video');
+    const loader = document.getElementById('cam-loading');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } },
+        audio: false
+      });
+      video.srcObject = stream;
+      await video.play();
+      loader.classList.add('hidden');
+      document.getElementById('capture-btn').disabled = false;
+    } catch (err) {
+      console.error('Camera error:', err);
+      loader.innerHTML = '<div style="font-size:13px;color:#f87171;text-align:center;padding:0 20px">Camera access denied.<br>Please allow camera permission.</div>';
+    }
+  }
+
+  /* ─── Capture ─── */
+  async function capturePhoto() {
+    if (busy) return;
+    busy = true;
+
+    const video   = document.getElementById('live-video');
+    const canvas  = document.getElementById('snap-canvas');
+    canvas.width  = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.scale(-1, 1); // flip to match mirror
+    ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+    ctx.restore();
+
+    canvas.toBlob(async blob => {
+      if (!blob) { busy = false; return; }
+      const file = new File([blob], 'checkin.jpg', { type: 'image/jpeg' });
+      console.log(file);
+
+      await processPhoto(file);
+    }, 'image/jpeg', 0.92);
+  }
+  let capturedAttendanceFile = null;
+  async function processPhoto(file) {
+    capturedAttendanceFile = file;
+    document.getElementById('cam-processing').classList.add('active');
+    document.getElementById('capture-btn').disabled = true;
+
+    try {
+      // // 1. Create blank record
+      // const add_res = await ZOHO.CREATOR.DATA.addRecords({
+      //   app_name: "eo-chennai",
+      //   form_name: "Attendance_Image_Details",
+      //   payload: { data: {} }
+      // });
+
+      // if (add_res.code !== 3000) throw new Error('Record creation failed');
+      // record_id = add_res?.data?.ID;
+
+      // // 2. Upload image
+      // await ZOHO.CREATOR.FILE.uploadFile({
+      //   app_name: "eo-chennai",
+      //   report_name: "All_Attendance_Image_Details",
+      //   id: `${record_id}`,
+      //   field_name: "Image",
+      //   file: file
+      // });
+      
+
+      // // 3. Wait for AWS processing
+      // await delay(15000);
+
+      // // 4. Fetch result
+      // const aws_resp = await ZOHO.CREATOR.DATA.getRecordById({
+      //   app_name: "eo-chennai",
+      //   report_name: "All_Attendance_Image_Details",
+      //   id: `${record_id}`
+      // });
+
+      // if (aws_resp.code !== 3000) throw new Error('Fetch failed');
+
+      // const resp_data = aws_resp.data;
+      // const memberId  = resp_data?.Member?.ID;
+      // mem_id = memberId;
+
+      const base64Image = await fileToBase64(file);
+      
+  //  const config = {
+  //     http_method: "POST",
+  //     api_name: "AWS_Integration",
+  //     public_key: "VXwPhOXJvNeqrWVqfHgN6kTBp",
+  //     payload: {
+  //        image: base64Image,
+  //        event_id: event_id
+  //     }
+  //  };
+  //  const response = await ZOHO.CREATOR.DATA.invokeCustomApi(config);
+
+
+   const config1 = {
+      http_method: "POST",
+      api_name: "TestAPI",
+      public_key: "eZvy12fe2SYvF0nBbj435MtTy",
+      payload: {
+         image: base64Image,
+         event_id: event_id
+      }
+   };
+   const response = await ZOHO.CREATOR.DATA.invokeCustomApi(config1);
+   console.log(response);
+   
+   
+
+      document.getElementById('cam-processing').classList.remove('active');
+  //  console.log(response);
+   
+if( response.code === '3000' ){
+      showSuccessPopup(response?.data?.name);
+   }
+   else if( response.code === '3100'){
+    await loadMembers();
+    console.log("Mauall Called at 1014");
     
+    showManualPopup();
+   }
+
+     
+    } catch (err) {
+      console.error(err);
+      document.getElementById('cam-processing').classList.remove('active');
+      showToast('Please show Proper Image', 'error');
+    } finally {
+      busy = false;
+      document.getElementById('capture-btn').disabled = false;
+    }
   }
+
+  async function markAttendanceZoho(memberId, manualData = null,attendanceFile = null) {
+    const data = { Member: memberId, Event: event_id };
+    if (manualData) {
+      if (manualData.name)  data.Name         = manualData.name;
+      if (manualData.phone) data.Phone_Number = manualData.phone;
+      if (manualData.email) data.Email         = manualData.email;
+    }
+    const res = await ZOHO.CREATOR.DATA.addRecords({
+      app_name: "eo-chennai",
+      form_name: "Events_Attendance",
+      payload: { data }
+    });
+    
+    if (res.code !== 3000) throw new Error(res.message || 'Attendance failed');
+     const rec_id = res?.data?.ID;
+
+  if (attendanceFile) {
+    const image_upload = await ZOHO.CREATOR.FILE.uploadFile({
+      app_name: "eo-chennai",
+      report_name: "Events_Attendance_Report",   
+      id: `${rec_id}`,
+      field_name: "Image",                    
+      file: attendanceFile
+    });
+    console.log(image_upload);
+  }
+  
+  
+    return res;
+  }
+
+  /* ─── Load all members for dropdown ─── */
+  
+
+  /* ─── Popup helpers ─── */
+  let successTimer;
+function showSuccessPopup(name) {
+  clearTimeout(successTimer);
+  document.getElementById('success-name').textContent = name;
+  const notif = document.getElementById('success-notif');
+  notif.classList.remove('show'); // reset animation
+  void notif.offsetWidth;         // force reflow
+  notif.classList.add('show');
+  successTimer = setTimeout(() => {
+    notif.classList.remove('show');
+  }, 2800);
+}
+
+function closeSuccessPopup() {
+  document.getElementById('success-notif').classList.remove('show');
+  record_id = undefined; mem_id = undefined;
+}
+
+  function closeSuccessPopup() {
+    document.getElementById('overlay-success').classList.remove('active');
+    record_id = undefined; mem_id = undefined;
+  }
+
+  function showManualPopup() {
+  clearDropdownSelection();  
+
+  const trigger = document.getElementById('dropdown-trigger');
+  trigger.classList.remove('disabled');
+  closeDropdown();
+
+  document.getElementById('manual-name').value  = '';
+  document.getElementById('manual-phone').value = '';
+  document.getElementById('manual-email').value = '';
+  document.getElementById('mark-btn').disabled = true;
+  toggleManualFields(false);
+  document.getElementById('overlay-manual').classList.add('active');
+}
+
+  function closeManualPopup() {
+  document.getElementById('overlay-manual').classList.remove('active');
+  record_id = undefined; mem_id = undefined;
+
+  // Reset mark button to original state
+  const btn = document.getElementById('mark-btn');
+  btn.disabled = true;
+  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg> Mark Attendance`;
+}
+
+  /* ─── Mutual exclusivity logic ─── */
+  
+  /* ─── Custom dropdown state ─── */
+let selectedMemberId = '';
+let selectedMemberName = '';
+let dropdownOpen = false;
+
+function toggleDropdown() {
+  const trigger = document.getElementById('dropdown-trigger');
+  const panel   = document.getElementById('dropdown-panel');
+  const search  = document.getElementById('dropdown-search');
+  if (trigger.classList.contains('disabled')) return;
+  dropdownOpen = !dropdownOpen;
+  trigger.classList.toggle('open', dropdownOpen);
+  panel.classList.toggle('open', dropdownOpen);
+  if (dropdownOpen) {
+    search.value = '';
+    renderDropdownItems(members);
+    setTimeout(() => search.focus(), 60);
+  }
+}
+
+function closeDropdown() {
+  dropdownOpen = false;
+  document.getElementById('dropdown-trigger').classList.remove('open');
+  document.getElementById('dropdown-panel').classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  const dd = document.getElementById('custom-dropdown');
+  if (dd && !dd.contains(e.target)) closeDropdown();
+});
+
+function filterMembers() {
+  const q = document.getElementById('dropdown-search').value.toLowerCase();
+  const filtered = members.filter(m =>
+    m.name.toLowerCase().includes(q) || (m.email || '').toLowerCase().includes(q)
+  );
+  renderDropdownItems(filtered);
+}
+
+function renderDropdownItems(list) {
+  const container = document.getElementById('dropdown-list');
+  if (!list.length) {
+    container.innerHTML = '<div class="dropdown-empty">No members found</div>';
+    return;
+  }
+  container.innerHTML = '';
+  list.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'dropdown-item' + (m.id === selectedMemberId ? ' active' : '');
+    div.innerHTML = `
+      <div class="dropdown-item-name">${m.name}</div>
+      <div class="dropdown-item-email">${m.email || '—'}</div>
+    `;
+    div.addEventListener('click', () => selectMember(m.id, m.name, m.email || ''));
+    container.appendChild(div);
+  });
+}
+
+function selectMember(id, name, email) {
+  selectedMemberId   = id;
+  selectedMemberName = name;
+  const display = document.getElementById('dropdown-display');
+  display.textContent = name + (email ? ` — ${email}` : '');
+  display.classList.add('selected');
+  document.getElementById('dropdown-clear').classList.add('visible');
+  closeDropdown();
+  // Disable manual fields
+  toggleManualFields(true);
+  ['manual-name','manual-phone','manual-email'].forEach(fid => {
+    document.getElementById(fid).value = '';
+  });
+  document.getElementById('member-dropdown-hidden').value = id;
+  updateMarkBtn();
+}
+
+function clearDropdownSelection() {
+  selectedMemberId   = '';
+  selectedMemberName = '';
+
+  const display = document.getElementById('dropdown-display');
+  display.textContent = '— Choose a member —';
+  display.classList.remove('selected');
+
+  document.getElementById('member-dropdown-hidden').value = '';
+  document.getElementById('dropdown-clear').classList.remove('visible');
+  document.getElementById('dropdown-trigger').classList.remove('disabled');
+}
+
+function loadMembers() {
+  const select = document.getElementById('member-dropdown-hidden');
+  select.value = '';
+  clearDropdownSelection();
+  renderDropdownItems(members);
+}
+
+function toggleManualFields(disabled) {
+  ['manual-name','manual-phone','manual-email'].forEach(id => {
+    document.getElementById(id).disabled = disabled;
+  });
+  const trigger = document.getElementById('dropdown-trigger');
+  if (disabled) {
+    // dropdown is active, keep it enabled
+    trigger.classList.remove('disabled');
+  }
+}
+
+function onManualChange() {
+  const name  = document.getElementById('manual-name').value.trim();
+  const phone = document.getElementById('manual-phone').value.trim();
+  const email = document.getElementById('manual-email').value.trim();
+  const hasManual = name || phone || email;
+  const trigger = document.getElementById('dropdown-trigger');
+  if (hasManual) {
+    clearDropdownSelection();
+    trigger.classList.add('disabled');
+    closeDropdown();
+  } else {
+    trigger.classList.remove('disabled');
+  }
+  updateMarkBtn();
+}
+
+function updateMarkBtn() {
+  const hasDropdown = selectedMemberId !== '';
+  const name  = document.getElementById('manual-name').value.trim();
+  const phone = document.getElementById('manual-phone').value.trim();
+  const email = document.getElementById('manual-email').value.trim();
+  document.getElementById('mark-btn').disabled = !(hasDropdown || name || phone || email);
+}
+
+  
+
+  
+
+  
+
+  /* ─── Manual attendance submit ─── */
+  async function handleManualAttendance() {
+  const btn = document.getElementById('mark-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="ring-spinner" style="width:17px;height:17px;border-width:2px;margin-right:8px"></div> Marking…';
+
+  try {
+    if (selectedMemberId) {
+      await markAttendanceZoho(selectedMemberId,null,capturedAttendanceFile);
+      closeManualPopup();
+      await delay(200);
+      showSuccessPopup(selectedMemberName);
+    } else {
+      const manualData = {
+        name:  document.getElementById('manual-name').value.trim(),
+        phone: document.getElementById('manual-phone').value.trim(),
+        email: document.getElementById('manual-email').value.trim()
+      };
+      await markAttendanceZoho('', manualData,capturedAttendanceFile);
+      closeManualPopup();
+      await delay(200);
+      showSuccessPopup(manualData.name || 'Member');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Failed to mark attendance. Try again.', 'error');
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg> Mark Attendance`;
+  }
+}
+let event_name = "";
+
+  /* ─── Init ─── */
+  async function getInit() {
+    try {
+      const query_param = await ZOHO.CREATOR.UTIL.getQueryParams();
+      event_id = query_param?.event_id;
+      event_name = query_param?.event_name;
+      if( event_name ){
+         document.getElementsByClassName("header-title")[0].innerText =
+        `Welcome to ${event_name} Attendance Page`;
+      }
+      
+    } catch (e) { console.error(e); }
+  }
+  async function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+
+    reader.onerror = error => reject(error);
+  });
+}
+
+async function recognizeFace(file_data) {
+
+   // Convert file to base64
+   const base64Image = await fileToBase64(file_data);
+
+   const config = {
+      http_method: "POST",
+      api_name: "AWS_Integration",
+      public_key: "VXwPhOXJvNeqrWVqfHgN6kTBp",
+      payload: {
+         image: base64Image,
+         file_name: file_data.name
+      }
+   };
+
+   const response = await ZOHO.CREATOR.DATA.invokeCustomApi(config);
+
+   if( response.code === '3000' ){
+      showSuccessPopup(response?.data?.name);
+   }
+   else if( response.code === '3100'){
+    await loadMembers();
+    console.log("Manuall Called from 1311");
+    showManualPopup();
+   }
+}
+function handleClearDropdown(event) {
+  event.stopPropagation(); // prevent triggering toggleDropdown
+  clearDropdownSelection();
+  toggleManualFields(false);
+  updateMarkBtn();
+}
+async function getAllMembers(){
+  var config = {
+  app_name: "eo-chennai",
+  report_name: "Members_Backend"
+};
+const res = await ZOHO.CREATOR.DATA.getRecords(config);
+console.log(res);
+if (res.code === 3000 && Array.isArray(res.data)) {
+  members = res.data.map(m => ({ id: m.ID, name: m.EA_Name,email:m.EA_Email}));    
+}
+
+}
+getAllMembers();
+// recognizeFace();
   getInit();
+  startCamera();
 </script>
 </body>
 </html>
