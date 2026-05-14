@@ -852,7 +852,36 @@
 </div>
 
       <div class="or-divider">or</div>
-
+       <!-- Spouse dropdown -->
+      <div class="field-group">
+        <div class="field-label">Select Spouse / Life Partner</div>
+        <div class="custom-dropdown" id="custom-dropdown-spouse">
+          <div class="dropdown-trigger" id="dropdown-trigger-spouse" onclick="toggleSpouseDropdown()">
+            <span class="dropdown-trigger-text" id="dropdown-display-spouse">— Choose a spouse —</span>
+            <button class="dropdown-clear" id="dropdown-clear-spouse" onclick="handleClearSpouseDropdown(event)" title="Clear selection">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <svg class="dropdown-chevron" id="dropdown-chevron-spouse" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="dropdown-panel" id="dropdown-panel-spouse">
+            <div class="dropdown-search-wrap">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input
+                type="text"
+                class="dropdown-search"
+                id="dropdown-search-spouse"
+                placeholder="Search by name or email…"
+                oninput="filterSpouse()"
+                onclick="event.stopPropagation()"
+              >
+            </div>
+            <div class="dropdown-list" id="dropdown-list-spouse">
+              <div class="dropdown-empty">No spouse records loaded yet</div>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="spouse-dropdown-hidden" value="">
+      </div>
       <!-- Manual fields -->
       <div class="manual-fields">
         <div class="field-group">
@@ -888,7 +917,11 @@
   /* ─── State ─── */
   let event_id, record_id, mem_id;
   let members = []; // [{id, name}]
+  let spouse = [];
   let busy = false;
+
+
+  
 
   /* ─── Helpers ─── */
   function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -1039,8 +1072,13 @@ if( response.code === '3000' ){
     }
   }
 
-  async function markAttendanceZoho(memberId, manualData = null,attendanceFile = null) {
-    const data = { Member: memberId, Event: event_id };
+  async function markAttendanceZoho(memberId, manualData = null, attendanceFile = null, type = 'member') {
+    const data = { Event: event_id };
+    if (type === 'spouse') {
+      data.Spouse_Details = memberId;
+    } else if (memberId) {
+      data.Member = memberId;
+    }
     if (manualData) {
       if (manualData.name)  data.Name         = manualData.name;
       if (manualData.phone) data.Phone_Number = manualData.phone;
@@ -1109,12 +1147,18 @@ function closeSuccessPopup() {
   document.getElementById('manual-email').value = '';
   document.getElementById('mark-btn').disabled = true;
   toggleManualFields(false);
+  clearSpouseSelection();
+  const spouseTrigger = document.getElementById('dropdown-trigger-spouse');
+  spouseTrigger.classList.remove('disabled');
+  closeSpouseDropdown();
+  renderSpouseItems(spouse);
   document.getElementById('overlay-manual').classList.add('active');
 }
 
   function closeManualPopup() {
   document.getElementById('overlay-manual').classList.remove('active');
   record_id = undefined; mem_id = undefined;
+  clearSpouseSelection();
 
   // Reset mark button to original state
   const btn = document.getElementById('mark-btn');
@@ -1128,6 +1172,10 @@ function closeSuccessPopup() {
 let selectedMemberId = '';
 let selectedMemberName = '';
 let dropdownOpen = false;
+
+let selectedSpouseId = '';
+let selectedSpouseName = '';
+let spouseDropdownOpen = false;
 
 function toggleDropdown() {
   const trigger = document.getElementById('dropdown-trigger');
@@ -1153,8 +1201,9 @@ function closeDropdown() {
 document.addEventListener('click', function(e) {
   const dd = document.getElementById('custom-dropdown');
   if (dd && !dd.contains(e.target)) closeDropdown();
+  const dds = document.getElementById('custom-dropdown-spouse');
+  if (dds && !dds.contains(e.target)) closeSpouseDropdown();
 });
-
 function filterMembers() {
   const q = document.getElementById('dropdown-search').value.toLowerCase();
   const filtered = members.filter(m =>
@@ -1196,6 +1245,9 @@ function selectMember(id, name, email) {
     document.getElementById(fid).value = '';
   });
   document.getElementById('member-dropdown-hidden').value = id;
+
+  clearSpouseSelection();
+  document.getElementById('dropdown-trigger-spouse').classList.add('disabled');
   updateMarkBtn();
 }
 
@@ -1210,6 +1262,9 @@ function clearDropdownSelection() {
   document.getElementById('member-dropdown-hidden').value = '';
   document.getElementById('dropdown-clear').classList.remove('visible');
   document.getElementById('dropdown-trigger').classList.remove('disabled');
+
+  const spouseTrigger = document.getElementById('dropdown-trigger-spouse');
+  if (spouseTrigger) spouseTrigger.classList.remove('disabled');
 }
 
 function loadMembers() {
@@ -1238,23 +1293,113 @@ function onManualChange() {
   const trigger = document.getElementById('dropdown-trigger');
   if (hasManual) {
     clearDropdownSelection();
+    clearSpouseSelection();
     trigger.classList.add('disabled');
     closeDropdown();
+    document.getElementById('dropdown-trigger-spouse').classList.add('disabled');
+    closeSpouseDropdown();
   } else {
     trigger.classList.remove('disabled');
+    document.getElementById('dropdown-trigger-spouse').classList.remove('disabled');
   }
   updateMarkBtn();
 }
 
 function updateMarkBtn() {
   const hasDropdown = selectedMemberId !== '';
+  const hasSpouse   = selectedSpouseId !== '';
   const name  = document.getElementById('manual-name').value.trim();
   const phone = document.getElementById('manual-phone').value.trim();
   const email = document.getElementById('manual-email').value.trim();
-  document.getElementById('mark-btn').disabled = !(hasDropdown || name || phone || email);
+  document.getElementById('mark-btn').disabled = !(hasDropdown || hasSpouse || name || phone || email);
 }
 
-  
+function toggleSpouseDropdown() {
+  const trigger = document.getElementById('dropdown-trigger-spouse');
+  const panel   = document.getElementById('dropdown-panel-spouse');
+  const search  = document.getElementById('dropdown-search-spouse');
+  if (trigger.classList.contains('disabled')) return;
+  spouseDropdownOpen = !spouseDropdownOpen;
+  trigger.classList.toggle('open', spouseDropdownOpen);
+  panel.classList.toggle('open', spouseDropdownOpen);
+  if (spouseDropdownOpen) {
+    search.value = '';
+    renderSpouseItems(spouse);
+    setTimeout(() => search.focus(), 60);
+  }
+}
+
+function closeSpouseDropdown() {
+  spouseDropdownOpen = false;
+  document.getElementById('dropdown-trigger-spouse').classList.remove('open');
+  document.getElementById('dropdown-panel-spouse').classList.remove('open');
+}
+
+function filterSpouse() {
+  const q = document.getElementById('dropdown-search-spouse').value.toLowerCase();
+  const filtered = spouse.filter(s =>
+    s.spouse_name.toLowerCase().includes(q) ||
+    (s.spouse_email || '').toLowerCase().includes(q)
+  );
+  renderSpouseItems(filtered);
+}
+
+function renderSpouseItems(list) {
+  const container = document.getElementById('dropdown-list-spouse');
+  if (!list.length) {
+    container.innerHTML = '<div class="dropdown-empty">No spouse found</div>';
+    return;
+  }
+  container.innerHTML = '';
+  list.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'dropdown-item' + (s.spouse_id === selectedSpouseId ? ' active' : '');
+    div.innerHTML = `
+      <div class="dropdown-item-name">${s.spouse_name}</div>
+      <div class="dropdown-item-email">${s.spouse_email || '—'}</div>
+    `;
+    div.addEventListener('click', () => selectSpouse(s.spouse_id, s.spouse_name, s.spouse_email || ''));
+    container.appendChild(div);
+  });
+}
+
+function selectSpouse(id, name, email) {
+  selectedSpouseId   = id;
+  selectedSpouseName = name;
+  const display = document.getElementById('dropdown-display-spouse');
+  display.textContent = name + (email ? ` — ${email}` : '');
+  display.classList.add('selected');
+  document.getElementById('dropdown-clear-spouse').classList.add('visible');
+  closeSpouseDropdown();
+  // Disable member dropdown and manual fields when spouse is selected
+  clearDropdownSelection();
+  document.getElementById('dropdown-trigger').classList.add('disabled');
+  toggleManualFields(true);
+  ['manual-name','manual-phone','manual-email'].forEach(fid => {
+    document.getElementById(fid).value = '';
+  });
+  document.getElementById('spouse-dropdown-hidden').value = id;
+  updateMarkBtn();
+}
+
+function clearSpouseSelection() {
+  selectedSpouseId   = '';
+  selectedSpouseName = '';
+  const display = document.getElementById('dropdown-display-spouse');
+  display.textContent = '— Choose a spouse —';
+  display.classList.remove('selected');
+  document.getElementById('spouse-dropdown-hidden').value = '';
+  document.getElementById('dropdown-clear-spouse').classList.remove('visible');
+}
+
+function handleClearSpouseDropdown(event) {
+  event.stopPropagation();
+  clearSpouseSelection();
+  // Re-enable member dropdown and manual fields
+  document.getElementById('dropdown-trigger').classList.remove('disabled');
+  toggleManualFields(false);
+  updateMarkBtn();
+}  
 
   
 
@@ -1268,10 +1413,15 @@ function updateMarkBtn() {
 
   try {
     if (selectedMemberId) {
-      await markAttendanceZoho(selectedMemberId,null,capturedAttendanceFile);
+      await markAttendanceZoho(selectedMemberId, null, capturedAttendanceFile);
       closeManualPopup();
       await delay(200);
       showSuccessPopup(selectedMemberName);
+    } else if (selectedSpouseId) {
+      await markAttendanceZoho(selectedSpouseId, null, capturedAttendanceFile, 'spouse');
+      closeManualPopup();
+      await delay(200);
+      showSuccessPopup(selectedSpouseName);
     } else {
       const manualData = {
         name:  document.getElementById('manual-name').value.trim(),
@@ -1351,12 +1501,33 @@ function handleClearDropdown(event) {
   toggleManualFields(false);
   updateMarkBtn();
 }
+async function getAllSpouse(){
+  var config = {
+  app_name: "eo-chennai",
+  report_name: "All_Spouse_Details"
+};
+const res = await ZOHO.CREATOR.DATA.getRecords(config);
+console.log("Spouse Resp");
+console.log(JSON.stringify(res) );
+ if (res.code === 3000 && Array.isArray(res.data)) {
+    spouse = res.data.map(m => ({
+      spouse_id: m.ID,
+      spouse_name: m.Spouse_Name,
+      spouse_email: m["Member.Spouse_Life_Partner_Email"]
+    }));
+  }
+  console.log(spouse);
+  
+
+}
 async function getAllMembers(){
   var config = {
   app_name: "eo-chennai",
   report_name: "Members_Backend"
 };
 const res = await ZOHO.CREATOR.DATA.getRecords(config);
+console.log("member Resp");
+
 console.log(res);
 if (res.code === 3000 && Array.isArray(res.data)) {
   members = res.data.map(m => ({ id: m.ID, name: m.EA_Name,email:m.EA_Email}));    
@@ -1364,6 +1535,7 @@ if (res.code === 3000 && Array.isArray(res.data)) {
 
 }
 getAllMembers();
+getAllSpouse();
 // recognizeFace();
   getInit();
   startCamera();
