@@ -49,14 +49,14 @@
   }
 
   .shell {
-    width: 100%;
-    max-width: 520px;
-    background: var(--card);
-    border-radius: 28px;
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border);
-  }
+  width: 100%;
+  max-width: 100%;          /* was 520px */
+  border-radius: 0;         /* remove rounded corners */
+  border: none;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
   /* ══ HEADER ══ */
   .header {
@@ -69,13 +69,14 @@
   }
 
   .brand-mark {
-    width: 42px; height: 42px;
-    border-radius: 12px;
-    background: var(--purple);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 18px rgba(108,43,217,0.55);
-    flex-shrink: 0;
-  }
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  background: transparent;   /* no purple bg */
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;           /* clips image to rounded corners */
+}
+
   .brand-mark svg { width: 20px; height: 20px; color: #fff; }
 
   .header-text {}
@@ -96,40 +97,32 @@
 
   /* ══ CAMERA SECTION ══ */
   .camera-section {
-    padding: 24px 28px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
+  flex: 1;
+  padding: 0;               /* remove padding */
+  gap: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end; /* push capture btn to bottom */
+}
 
-  .camera-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
-    align-self: flex-start;
-  }
+  .camera-label { display: none; }
 
   .camera-wrapper {
-    width: 100%;
-    position: relative;
-    border-radius: 18px;
-    overflow: hidden;
-    background: #080610;
-    border: 1.5px solid var(--border);
-    box-shadow: 0 0 0 4px rgba(108,43,217,0.06), var(--shadow-md);
-  }
+  position: absolute;       /* fill entire section */
+  inset: 0;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
 
-  #live-video {
-    width: 100%;
-    display: block;
-    aspect-ratio: 4/3;
-    object-fit: cover;
-    transform: scaleX(-1); /* Mirror for selfie */
-    border-radius: 17px;
-  }
+#live-video {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: unset;      /* override 4/3 */
+  object-fit: cover;
+}
 
   /* Corner brackets */
   .cam-corner {
@@ -217,18 +210,10 @@
 
   /* Capture button */
   .capture-btn {
-    width: 72px; height: 72px;
-    border-radius: 50%;
-    border: 3px solid var(--purple-mid);
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    transition: all 0.25s;
-    box-shadow: 0 0 0 0 rgba(108,43,217,0.4);
-  }
+  position: relative;
+  z-index: 10;
+  margin-bottom: 36px;
+}
   .capture-btn:hover:not(:disabled) {
     border-color: var(--violet);
     box-shadow: 0 0 0 8px rgba(108,43,217,0.15), 0 6px 24px rgba(108,43,217,0.35);
@@ -250,12 +235,14 @@
   .capture-inner svg { width: 22px; height: 22px; color: #fff; }
 
   .capture-label {
-    font-size: 11.5px;
-    font-weight: 500;
-    color: var(--muted);
-    letter-spacing: 0.06em;
-    margin-top: -6px;
-  }
+  position: relative;
+  z-index: 10;
+  margin-bottom: 0;
+  margin-top: -28px;        /* tuck under button */
+  margin-bottom: 28px;
+  color: rgba(255,255,255,0.6);
+}
+
 
   /* ══ SUCCESS POPUP ══ */
   .overlay {
@@ -504,12 +491,11 @@
   #snap-canvas { display: none; }
 
   @media (max-width: 480px) {
-    body { padding: 10px; }
-    .camera-section { padding: 18px 18px 16px; }
-    .header { padding: 22px 22px 18px; }
-    .popup-manual-body, .popup-success-body { padding: 18px 20px 22px; }
-    .popup-manual .popup-header, .popup-success .popup-header { padding: 24px 20px 20px; }
-  }
+  .header { padding: 18px 18px 14px; }
+  .popup-manual-body, .popup-success-body { padding: 18px 20px 22px; }
+  .popup-manual .popup-header, .popup-success .popup-header { padding: 24px 20px 20px; }
+}
+
   /* ══ CUSTOM DROPDOWN ══ */
 .custom-dropdown {
   position: relative;
@@ -741,6 +727,60 @@
   from { transform: scaleX(1); }
   to   { transform: scaleX(0); }
 }
+.overlay-success-bg {
+  background: rgba(5, 20, 10, 0.92);
+  backdrop-filter: blur(10px);
+}
+
+#overlay-success {
+  flex-direction: column;
+}
+
+.success-splash {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  animation: splash-in 0.45s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes splash-in {
+  from { opacity: 0; transform: scale(0.7); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.splash-thumb {
+  font-size: 100px;
+  line-height: 1;
+  filter: drop-shadow(0 8px 32px rgba(74,222,128,0.4));
+  animation: thumb-bounce 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s both;
+}
+
+@keyframes thumb-bounce {
+  0%   { transform: scale(0) rotate(-20deg); }
+  70%  { transform: scale(1.15) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.splash-hi {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+}
+
+.splash-hi span {
+  color: var(--green);
+}
+
+.splash-msg {
+  font-size: 16px;
+  color: rgba(255,255,255,0.55);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
 </style>
 </head>
 <body>
@@ -749,8 +789,12 @@
   <!-- Header -->
   <div class="header">
     <div class="brand-mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    </div>
+  <img 
+    src="https://creatorexport.zoho.in/file/aca_yeochennai/eo-chennai/All_Logos/434869000000088002/Logo/image-download/Zrf5taa1YmrPRfvjnVMEBArkxnTJMkz6vbUQ06fZ3g9s3Z7AxaC4WROqjVkTBffHRrRFGnSvPM8QmGx2eaFxqgQMV65mu4Mj0WZA?filepath=/1779164847260141_EO_Chennai_logo_in_vibrant_color.png"
+    alt="EO Chennai Logo"
+    style="width:42px; height:42px; object-fit:contain; border-radius:10px;"
+  >
+</div>
     <div class="header-text">
       <div class="header-eyebrow">Member Check-In</div>
       <div class="header-title">EO Chennai Portal</div>
@@ -802,13 +846,11 @@
 
 <!-- ══ SUCCESS POPUP ══ -->
 <!-- ══ SUCCESS NOTIFICATION ══ -->
-<div class="success-notif" id="success-notif">
-  <div class="success-notif-icon">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-  </div>
-  <div class="success-notif-text">
-    <div class="success-notif-title">Attendance Marked!</div>
-    <div class="success-notif-sub">Hi <strong id="success-name">Member</strong>, you're marked present.</div>
+<div class="overlay" id="overlay-success">
+  <div class="success-splash">
+    <div class="splash-thumb">👍</div>
+    <div class="splash-hi">Hi, <span id="success-name">Member</span>!</div>
+    <div class="splash-msg">Attendance marked successfully</div>
   </div>
 </div>
 <!-- ══ MANUAL POPUP ══ -->
@@ -1116,24 +1158,17 @@ if( response.code === '3000' ){
 function showSuccessPopup(name) {
   clearTimeout(successTimer);
   document.getElementById('success-name').textContent = name;
-  const notif = document.getElementById('success-notif');
-  notif.classList.remove('show'); // reset animation
-  void notif.offsetWidth;         // force reflow
-  notif.classList.add('show');
+  const overlay = document.getElementById('overlay-success');
+  overlay.classList.add('active', 'overlay-success-bg');
   successTimer = setTimeout(() => {
-    notif.classList.remove('show');
-  }, 2800);
+    overlay.classList.remove('active', 'overlay-success-bg');
+  }, 3000); // auto-dismiss after 3s
 }
 
 function closeSuccessPopup() {
-  document.getElementById('success-notif').classList.remove('show');
+  document.getElementById('overlay-success').classList.remove('active', 'overlay-success-bg');
   record_id = undefined; mem_id = undefined;
 }
-
-  function closeSuccessPopup() {
-    document.getElementById('overlay-success').classList.remove('active');
-    record_id = undefined; mem_id = undefined;
-  }
 
   function showManualPopup() {
   clearDropdownSelection();  
