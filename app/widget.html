@@ -69,7 +69,7 @@
   }
 
   .brand-mark {
-  width: 42px; height: 42px;
+  width: 84px; height: 84px;
   border-radius: 12px;
   background: transparent;   /* no purple bg */
   display: flex; align-items: center; justify-content: center;
@@ -243,6 +243,89 @@
   color: rgba(255,255,255,0.6);
 }
 
+
+  /* ══ AUTO-CAPTURE STATUS & TOGGLE ══ */
+  .face-status {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.85);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: background 0.25s, color 0.25s;
+  }
+  .face-status.locked {
+    background: rgba(34,197,94,0.25);
+    border-color: rgba(74,222,128,0.4);
+    color: #fff;
+  }
+  .face-status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: background 0.25s;
+  }
+  .face-status.locked .face-status-dot {
+    background: var(--green);
+    animation: blink 0.9s ease-in-out infinite;
+  }
+
+  .auto-toggle {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50px;
+    padding: 5px 10px 5px 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .auto-toggle-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.75);
+    text-transform: uppercase;
+  }
+  .auto-toggle-switch {
+    width: 34px; height: 19px;
+    border-radius: 50px;
+    background: rgba(255,255,255,0.2);
+    position: relative;
+    transition: background 0.22s;
+    flex-shrink: 0;
+  }
+  .auto-toggle-switch.on { background: var(--green2); }
+  .auto-toggle-knob {
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    background: #fff;
+    transition: left 0.22s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .auto-toggle-switch.on .auto-toggle-knob { left: 17px; }
+
+  .cam-corner.locked { border-color: var(--green) !important; }
 
   /* ══ SUCCESS POPUP ══ */
   .overlay {
@@ -792,11 +875,11 @@
   <img 
     src="https://creatorexport.zoho.in/file/aca_yeochennai/eo-chennai/All_Logos/434869000000088002/Logo/image-download/Zrf5taa1YmrPRfvjnVMEBArkxnTJMkz6vbUQ06fZ3g9s3Z7AxaC4WROqjVkTBffHRrRFGnSvPM8QmGx2eaFxqgQMV65mu4Mj0WZA?filepath=/1779164847260141_EO_Chennai_logo_in_vibrant_color.png"
     alt="EO Chennai Logo"
-    style="width:42px; height:42px; object-fit:contain; border-radius:10px;"
+    style="width:84px; height:84px; object-fit:contain; border-radius:10px;"
   >
 </div>
     <div class="header-text">
-      <div class="header-eyebrow">Member Check-In</div>
+      <div class="header-eyebrow">Register Your Attendance</div>
       <div class="header-title">EO Chennai Portal</div>
     </div>
   </div>
@@ -831,6 +914,20 @@
       <div class="cam-processing" id="cam-processing">
         <div class="ring-spinner"></div>
         <div class="cam-processing-text">Identifying member…</div>
+      </div>
+
+      <!-- Auto-capture toggle -->
+      <div class="auto-toggle" id="auto-toggle" onclick="toggleAutoCapture()">
+        <span class="auto-toggle-label">Auto</span>
+        <div class="auto-toggle-switch on" id="auto-toggle-switch">
+          <div class="auto-toggle-knob"></div>
+        </div>
+      </div>
+
+      <!-- Face detection status -->
+      <div class="face-status" id="face-status">
+        <div class="face-status-dot" id="face-status-dot"></div>
+        <span id="face-status-text">Looking for a face…</span>
       </div>
     </div>
 
@@ -990,10 +1087,138 @@
       await video.play();
       loader.classList.add('hidden');
       document.getElementById('capture-btn').disabled = false;
+      initFaceDetector();
     } catch (err) {
       console.error('Camera error:', err);
       loader.innerHTML = '<div style="font-size:13px;color:#f87171;text-align:center;padding:0 20px">Camera access denied.<br>Please allow camera permission.</div>';
     }
+  }
+
+  /* ─── Face Auto-Capture (MediaPipe Face Detector, runs fully on-device) ─── */
+  let faceDetector = null;
+  let autoCaptureEnabled = true;
+  let faceStableSinceMs = null;
+  let lastAutoCaptureMs = 0;
+  let detectLoopActive = false;
+
+  const FACE_STABLE_MS      = 900;   // how long a good face must hold steady before auto-capturing
+  const CAPTURE_COOLDOWN_MS = 6000;  // pause auto-capture for this long right after a capture
+  const MIN_CONFIDENCE      = 0.75;  // detector confidence required
+  const MIN_FACE_RATIO      = 0.12;  // face width must be at least this fraction of frame width (not too far away)
+  const MAX_FACE_RATIO      = 0.85;  // and at most this fraction (not too close / cropped)
+
+  async function initFaceDetector() {
+    try {
+      const { FaceDetector, FilesetResolver } = await import(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs"
+      );
+      const filesetResolver = await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+      );
+      faceDetector = await FaceDetector.createFromOptions(filesetResolver, {
+        baseOptions: {
+          modelAssetPath:
+            "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
+          delegate: "GPU"
+        },
+        runningMode: "VIDEO",
+        minDetectionConfidence: MIN_CONFIDENCE
+      });
+      runFaceDetectionLoop();
+    } catch (err) {
+      // If the model/CDN can't load (offline, blocked domain, old browser) we
+      // fall back gracefully to manual-only capture - the big button still works.
+      console.error('Face auto-detect unavailable, falling back to manual capture:', err);
+      setFaceStatus('Auto-detect unavailable — tap to capture', false);
+      const toggle = document.getElementById('auto-toggle');
+      if (toggle) toggle.style.display = 'none';
+    }
+  }
+
+  function setFaceStatus(text, locked) {
+    const el  = document.getElementById('face-status');
+    const txt = document.getElementById('face-status-text');
+    if (!el || !txt) return;
+    txt.textContent = text;
+    el.classList.toggle('locked', !!locked);
+    document.querySelectorAll('.cam-corner').forEach(c => c.classList.toggle('locked', !!locked));
+  }
+
+  function toggleAutoCapture() {
+    autoCaptureEnabled = !autoCaptureEnabled;
+    document.getElementById('auto-toggle-switch').classList.toggle('on', autoCaptureEnabled);
+    faceStableSinceMs = null;
+    setFaceStatus(autoCaptureEnabled ? 'Looking for a face…' : 'Auto-capture off — tap to capture', false);
+  }
+
+  function runFaceDetectionLoop() {
+    if (detectLoopActive) return;
+    detectLoopActive = true;
+    const video = document.getElementById('live-video');
+
+    function tick() {
+      requestAnimationFrame(tick);
+      if (!faceDetector) return;
+
+      const manualOpen  = document.getElementById('overlay-manual').classList.contains('active');
+      const successOpen = document.getElementById('overlay-success').classList.contains('active');
+      if (busy || !autoCaptureEnabled || manualOpen || successOpen) {
+        faceStableSinceMs = null;
+        return;
+      }
+      if (video.readyState < 2 || video.videoWidth === 0) return;
+
+      const now = performance.now();
+      if (now - lastAutoCaptureMs < CAPTURE_COOLDOWN_MS) {
+        setFaceStatus('Please wait a moment…', false);
+        faceStableSinceMs = null;
+        return;
+      }
+
+      let result;
+      try {
+        result = faceDetector.detectForVideo(video, now);
+      } catch (e) {
+        return;
+      }
+
+      const dets = result?.detections || [];
+
+      if (dets.length !== 1) {
+        faceStableSinceMs = null;
+        setFaceStatus(dets.length === 0 ? 'Looking for a face…' : 'Only one person at a time, please', false);
+        return;
+      }
+
+      const box        = dets[0].boundingBox;
+      const score       = dets[0].categories?.[0]?.score ?? 0;
+      const widthRatio  = box.width / video.videoWidth;
+
+      const wellPositioned =
+        score >= MIN_CONFIDENCE &&
+        widthRatio >= MIN_FACE_RATIO &&
+        widthRatio <= MAX_FACE_RATIO;
+
+      if (!wellPositioned) {
+        faceStableSinceMs = null;
+        setFaceStatus(widthRatio < MIN_FACE_RATIO ? 'Move a little closer…' : 'Move back a little…', false);
+        return;
+      }
+
+      if (faceStableSinceMs === null) faceStableSinceMs = now;
+      const heldFor = now - faceStableSinceMs;
+
+      if (heldFor < FACE_STABLE_MS) {
+        setFaceStatus('Hold still…', true);
+        return;
+      }
+
+      setFaceStatus('Captured!', true);
+      lastAutoCaptureMs = now;
+      faceStableSinceMs = null;
+      capturePhoto();
+    }
+    tick();
   }
 
   /* ─── Capture ─── */

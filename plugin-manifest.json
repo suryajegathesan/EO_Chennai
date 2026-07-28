@@ -1,7 +1,10 @@
 {
   "service": "CREATOR",
   "cspDomains": {
-    "connect-src": []
+    "connect-src": [
+      "https://cdn.jsdelivr.net",
+      "https://storage.googleapis.com"
+    ]
   },
   "config": []
 }
